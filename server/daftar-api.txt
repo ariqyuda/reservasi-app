@@ -1,0 +1,42 @@
+daftar api yang sudah ada
+
+all user:
+1. register
+2. login
+3. logout
+
+
+pasien: 
+1. reservasi pribadi
+2. lihat riwayat reservasi
+3. lihat hasil reservasi
+
+admin: 
+1. insert dokter
+2. insert jadwal dokter
+3. insert poli
+4. insert petugas
+5. insert admin
+
+dokter:
+
+petugas:
+
+===============================
+
+daftar rencana api
+
+all user:
+1. ganti password
+
+pasien: 
+
+
+dokter:
+1. lihat jadwal
+
+petugas: 
+1. setujui reservasi
+2. tolak reservasi
+3. lihat reservasi
+
