@@ -1,5 +1,7 @@
 daftar api yang sudah ada
 
+fetch data:
+
 all user:
 1. register
 2. login
@@ -21,6 +23,7 @@ admin:
 dokter:
 
 petugas:
+1. lihat reservasi
 
 ===============================
 
@@ -38,5 +41,4 @@ dokter:
 petugas: 
 1. setujui reservasi
 2. tolak reservasi
-3. lihat reservasi
 

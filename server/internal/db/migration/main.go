@@ -103,6 +103,7 @@ func main() {
 		tmpt_lahir_pasien VARCHAR(255) NOT NULL,
 		alamat_pasien VARCHAR(255) NOT NULL,
 		no_hp_pasien VARCHAR(255) NOT NULL,
+		jadwal_tanggal VARCHAR(255) NOT NULL,
 		jadwal_hari VARCHAR(255) NOT NULL,
 		jadwal_waktu VARCHAR(255) NOT NULL,
 		tipe VARCHAR(255) NOT NULL,

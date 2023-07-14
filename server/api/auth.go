@@ -98,7 +98,6 @@ func (api *API) login(w http.ResponseWriter, req *http.Request) {
 	}
 
 	res, err := api.usersRepo.Login(user.Email, user.Password)
-	println(user.Email)
 
 	w.Header().Set("Content-Type", "application/json")
 	encoder := json.NewEncoder(w)

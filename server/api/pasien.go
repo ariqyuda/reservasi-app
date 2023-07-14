@@ -2,23 +2,15 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
-type Reservasi struct {
-	ID         int64  `db:"id"`
-	DokterName string `db:"dokter_name"`
-	PoliName   string `db:"poli_name"`
-	Hari       string `json:"jadwal_hari"`
-	Waktu      string `json:"jadwal_waktu"`
-	Type       string `db:"tipe"`
-	Status     string `db:"status"`
-}
-
 type Jadwal struct {
-	ID           int64  `db:"jadwal_id"`
-	Jadwal_Hari  string `json:"jadwal_hari"`
-	Jadwal_Waktu string `json:"jadwal_waktu"`
+	ID             int64  `db:"id"`
+	Jadwal_Tanggal string `db:"jadwal_tanggal"`
+	Jadwal_Hari    string `json:"jadwal_hari"`
+	Jadwal_Waktu   string `json:"jadwal_waktu"`
 }
 
 type ReservasiSuccessResponse struct {
@@ -46,8 +38,11 @@ func (api *API) reservasiPribadi(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	fmt.Println(jadwal.ID)
+	fmt.Println(jadwal.Jadwal_Tanggal)
+
 	encoder := json.NewEncoder(w)
-	err = api.pasienRepo.ReservasiPribadi(int64(userID), jadwal.ID)
+	err = api.pasienRepo.ReservasiPribadi(int64(userID), jadwal.ID, jadwal.Jadwal_Tanggal)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
@@ -56,6 +51,7 @@ func (api *API) reservasiPribadi(w http.ResponseWriter, req *http.Request) {
 
 	reservasiResponse := ReservasiSuccessResponse{
 		Message: "reservasi berhasil",
+		Data:    jadwal,
 	}
 
 	json.NewEncoder(w).Encode(reservasiResponse)

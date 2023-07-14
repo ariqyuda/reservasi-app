@@ -59,6 +59,7 @@ type Reservasi struct {
 	PhoneNumber string    `db:"no_hp_pasien"`
 	DokterName  string    `db:"dokter_name"`
 	PoliName    string    `db:"nama_poli"`
+	Tanggal     string    `db:"jadwal_tanggal"`
 	Hari        string    `json:"jadwal_hari"`
 	Waktu       string    `json:"jadwal_waktu"`
 	Tipe        string    `db:"tipe"`

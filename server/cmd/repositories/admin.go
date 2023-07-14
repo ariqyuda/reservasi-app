@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 )
 
@@ -11,6 +12,36 @@ type AdminRepo struct {
 
 func NewAdminRepositories(db *sql.DB) *AdminRepo {
 	return &AdminRepo{db: db}
+}
+
+func (a *PetugasRepo) FetchDataUserByRole(user_role string) ([]User, error) {
+	var user []User = make([]User, 0)
+
+	var sqlStmt string = `SELECT id, email, nama FROM users WHERE role = ?`
+
+	rows, err := a.db.Query(sqlStmt, user_role)
+	if err != nil {
+		return nil, errors.New("gagal menampilkan data user")
+	}
+
+	defer rows.Close()
+
+	var dataUser User
+	for rows.Next() {
+		err := rows.Scan(
+			&dataUser.ID,
+			&dataUser.Email,
+			&dataUser.Name,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		user = append(user, dataUser)
+	}
+
+	return user, nil
 }
 
 func (a *AdminRepo) InsertPoli(nama string) error {

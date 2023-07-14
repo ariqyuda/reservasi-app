@@ -72,7 +72,7 @@ func (p *PasienRepo) FetchPoliIDByDokterID(dokter_id int64) (*int64, error) {
 	return &id, err
 }
 
-func (p *PasienRepo) ReservasiPribadi(user_id, jadwal_id int64) error {
+func (p *PasienRepo) ReservasiPribadi(user_id, jadwal_id int64, jadwal_tanggal string) error {
 	var jadwal Jadwal
 	var pasien Pasien
 
@@ -84,11 +84,11 @@ func (p *PasienRepo) ReservasiPribadi(user_id, jadwal_id int64) error {
 	status := "menunggu persetujuan"
 
 	var sqlStmt string = `INSERT INTO reservasi (user_id, dokter_id, poli_id, nik_pasien, nama, jk_pasien,
-		tgl_lahir_pasien, tmpt_lahir_pasien, alamat_pasien, no_hp_pasien, jadwal_hari, jadwal_waktu, tipe, status, created_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		tgl_lahir_pasien, tmpt_lahir_pasien, alamat_pasien, no_hp_pasien, jadwal_tanggal, jadwal_hari, jadwal_waktu, tipe, status, created_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	_, err := p.db.Exec(sqlStmt, user_id, dokterID, poliID, pasien.NIK, pasien.Nama, pasien.Gender,
-		pasien.BornDate, pasien.BornPlace, pasien.Adress, pasien.PhoneNumber,
+		pasien.BornDate, pasien.BornPlace, pasien.Adress, pasien.PhoneNumber, jadwal_tanggal,
 		jadwal.Jadwal_Hari, jadwal.Jadwal_Waktu, tipe, status, time.Now())
 
 	if err != nil {
@@ -107,13 +107,13 @@ func (p *PasienRepo) FetchReservasiByUserID(user_id int64) ([]Reservasi, error) 
 	// 	JOIN dokter d ON r.dokter_id = d.id
 	// 	JOIN poli p ON r.poli_id = p.id`
 
-	var sqlStmt string = `SELECT d.nama, p.nama, r.jadwal_hari, r.jadwal_waktu, r.tipe, r.status 
+	var sqlStmt string = `SELECT d.nama, p.nama, r.jadwal_tanggal, r.jadwal_hari, r.jadwal_waktu, r.tipe, r.status 
 		FROM reservasi r
 		JOIN dokter d ON r.dokter_id = d.id
 		JOIN poli p ON r.poli_id = p.id
-		WHERE r.id = (SELECT max(r.id) FROM reservasi r)`
+		WHERE r.user_id = ?`
 
-	rows, err := p.db.Query(sqlStmt)
+	rows, err := p.db.Query(sqlStmt, user_id)
 	if err != nil {
 		return nil, errors.New("gagal menampilkan data reservasi")
 	}
@@ -125,6 +125,7 @@ func (p *PasienRepo) FetchReservasiByUserID(user_id int64) ([]Reservasi, error) 
 		err := rows.Scan(
 			&dataReservasi.DokterName,
 			&dataReservasi.PoliName,
+			&dataReservasi.Tanggal,
 			&dataReservasi.Hari,
 			&dataReservasi.Waktu,
 			&dataReservasi.Tipe,
@@ -142,10 +143,11 @@ func (p *PasienRepo) FetchReservasiByUserID(user_id int64) ([]Reservasi, error) 
 }
 
 func (p *PasienRepo) FetchLatestReservasiByUserID(user_id int64) (Reservasi, error) {
-	var sqlStmt string = `SELECT d.nama, p.nama, r.jadwal_hari, r.jadwal_waktu, r.tipe, r.status 
+	var sqlStmt string = `SELECT d.nama, p.nama, r.jadwal_tanggal, r.jadwal_hari, r.jadwal_waktu, r.tipe, r.status 
 		FROM reservasi r
 		JOIN dokter d ON r.dokter_id = d.id
-		JOIN poli p ON r.poli_id = p.id`
+		JOIN poli p ON r.poli_id = p.id
+		WHERE r.id = (SELECT max(r.id) FROM reservasi r)`
 
 	row := p.db.QueryRow(sqlStmt)
 
@@ -153,6 +155,7 @@ func (p *PasienRepo) FetchLatestReservasiByUserID(user_id int64) (Reservasi, err
 	err := row.Scan(
 		&reservasi.DokterName,
 		&reservasi.PoliName,
+		&reservasi.Tanggal,
 		&reservasi.Hari,
 		&reservasi.Waktu,
 		&reservasi.Tipe,
