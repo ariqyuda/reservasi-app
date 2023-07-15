@@ -42,10 +42,11 @@ type Poli struct {
 }
 
 type Jadwal struct {
-	ID           int64  `db:"id"`
-	dokter_ID    int64  `db:"dokter_id"`
-	Jadwal_Hari  string `json:"jadwal_hari"`
-	Jadwal_Waktu string `json:"jadwal_waktu"`
+	ID          int64  `db:"id"`
+	Dokter_ID   int64  `db:"dokter_id"`
+	NamaDokter  string `db:"nama_dokter"`
+	JadwalHari  string `json:"jadwal_hari"`
+	JadwalWaktu string `json:"jadwal_waktu"`
 }
 
 type Reservasi struct {

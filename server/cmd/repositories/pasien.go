@@ -14,6 +14,43 @@ func NewPasienRepositories(db *sql.DB) *PasienRepo {
 	return &PasienRepo{db: db}
 }
 
+func (p *PasienRepo) FetchJadwalDokterByPoli(poli_nama string) ([]Jadwal, error) {
+	var jadwal []Jadwal = make([]Jadwal, 0)
+
+	userRepo := NewUserRepositories(p.db)
+
+	poliID, _ := userRepo.FetchPoliID(poli_nama)
+
+	var sqlStmt string = `SELECT d.nama, j.jadwal_hari, j.jadwal_waktu
+		FROM dokter d
+		JOIN jadwal_dokter j ON d.id = j.dokter_id
+		WHERE d.poli_id = ?`
+
+	rows, err := p.db.Query(sqlStmt, poliID)
+	if err != nil {
+		return nil, errors.New("gagal menampilkan dokter")
+	}
+
+	defer rows.Close()
+
+	var dataJadwal Jadwal
+	for rows.Next() {
+		err := rows.Scan(
+			&dataJadwal.NamaDokter,
+			&dataJadwal.JadwalHari,
+			&dataJadwal.JadwalWaktu,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		jadwal = append(jadwal, dataJadwal)
+	}
+
+	return jadwal, nil
+}
+
 func (p *PasienRepo) FetchJadwalByID(id int64) (Jadwal, error) {
 	var jadwal Jadwal
 
@@ -21,9 +58,9 @@ func (p *PasienRepo) FetchJadwalByID(id int64) (Jadwal, error) {
 
 	row := p.db.QueryRow(sqlStmt, id)
 	err := row.Scan(
-		&jadwal.dokter_ID,
-		&jadwal.Jadwal_Hari,
-		&jadwal.Jadwal_Waktu,
+		&jadwal.Dokter_ID,
+		&jadwal.JadwalHari,
+		&jadwal.JadwalWaktu,
 	)
 
 	return jadwal, err
@@ -89,7 +126,7 @@ func (p *PasienRepo) ReservasiPribadi(user_id, jadwal_id int64, jadwal_tanggal s
 
 	_, err := p.db.Exec(sqlStmt, user_id, dokterID, poliID, pasien.NIK, pasien.Nama, pasien.Gender,
 		pasien.BornDate, pasien.BornPlace, pasien.Adress, pasien.PhoneNumber, jadwal_tanggal,
-		jadwal.Jadwal_Hari, jadwal.Jadwal_Waktu, tipe, status, time.Now())
+		jadwal.JadwalHari, jadwal.JadwalWaktu, tipe, status, time.Now())
 
 	if err != nil {
 		return err

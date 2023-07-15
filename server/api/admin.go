@@ -36,6 +36,11 @@ type JadwalDokter struct {
 	Waktu string `json:"jadwal_waktu"`
 }
 
+type FetchUserSuccessResponse struct {
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
+}
+
 type InsertDokterSuccessResponse struct {
 	Message string `json:"message"`
 	Data    Dokter `json:"data"`
@@ -70,12 +75,12 @@ func (api *API) lihatDataUser(w http.ResponseWriter, req *http.Request) {
 			encoder.Encode(ReservasiErrorResponse{Error: err.Error()})
 		}
 	}()
-	reservasiResponse := ReservasiSuccessResponse{
+	fetchUserResponse := FetchUserSuccessResponse{
 		Message: "success",
 		Data:    reservasi,
 	}
 
-	json.NewEncoder(w).Encode(reservasiResponse)
+	json.NewEncoder(w).Encode(fetchUserResponse)
 }
 
 func (api *API) insertDokter(w http.ResponseWriter, req *http.Request) {

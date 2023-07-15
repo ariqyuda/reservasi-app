@@ -13,6 +13,11 @@ type Jadwal struct {
 	Jadwal_Waktu   string `json:"jadwal_waktu"`
 }
 
+type FetchJadwalSuccessResponse struct {
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
+}
+
 type ReservasiSuccessResponse struct {
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
@@ -24,6 +29,28 @@ type ReservasiErrorResponse struct {
 
 type PasienErrorResponse struct {
 	Error string `json:"error"`
+}
+
+func (api *API) lihatJadwalDokter(w http.ResponseWriter, req *http.Request) {
+	api.AllowOrigin(w, req)
+
+	poli := req.URL.Query().Get("poli")
+
+	reservasi, err := api.pasienRepo.FetchJadwalDokterByPoli(poli)
+	encoder := json.NewEncoder(w)
+	w.Header().Set("Content-Type", "application/json")
+	defer func() {
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			encoder.Encode(ReservasiErrorResponse{Error: err.Error()})
+		}
+	}()
+	fetchJadwalResponse := FetchJadwalSuccessResponse{
+		Message: "success",
+		Data:    reservasi,
+	}
+
+	json.NewEncoder(w).Encode(fetchJadwalResponse)
 }
 
 func (api *API) reservasiPribadi(w http.ResponseWriter, req *http.Request) {

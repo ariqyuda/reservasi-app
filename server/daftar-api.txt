@@ -1,17 +1,18 @@
 daftar api yang sudah ada
 
 fetch data:
+1. fetch data user
 
 all user:
 1. register
 2. login
 3. logout
 
-
 pasien: 
 1. reservasi pribadi
 2. lihat riwayat reservasi
 3. lihat hasil reservasi
+4. lihat jadwal dokter
 
 admin: 
 1. insert dokter
