@@ -14,7 +14,7 @@ func NewAdminRepositories(db *sql.DB) *AdminRepo {
 	return &AdminRepo{db: db}
 }
 
-func (a *PetugasRepo) FetchDataUserByRole(user_role string) ([]User, error) {
+func (a *AdminRepo) FetchDataUserByRole(user_role string) ([]User, error) {
 	var user []User = make([]User, 0)
 
 	var sqlStmt string = `SELECT id, email, nama FROM users WHERE role = ?`
