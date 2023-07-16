@@ -13,6 +13,7 @@ pasien:
 2. lihat riwayat reservasi
 3. lihat hasil reservasi
 4. lihat jadwal dokter
+5. lihat poli
 
 admin: 
 1. insert dokter

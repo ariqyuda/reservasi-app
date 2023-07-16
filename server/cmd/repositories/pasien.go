@@ -14,6 +14,35 @@ func NewPasienRepositories(db *sql.DB) *PasienRepo {
 	return &PasienRepo{db: db}
 }
 
+func (p *PasienRepo) FetchPoli() ([]Poli, error) {
+	var poli []Poli = make([]Poli, 0)
+
+	var sqlStmt string = `SELECT id, nama FROM poli`
+
+	rows, err := p.db.Query(sqlStmt)
+	if err != nil {
+		return nil, errors.New("gagal menampilkan poli")
+	}
+
+	defer rows.Close()
+
+	var dataPoli Poli
+	for rows.Next() {
+		err := rows.Scan(
+			&dataPoli.ID,
+			&dataPoli.Name,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		poli = append(poli, dataPoli)
+	}
+
+	return poli, nil
+}
+
 func (p *PasienRepo) FetchJadwalDokterByPoli(poli_nama string) ([]Jadwal, error) {
 	var jadwal []Jadwal = make([]Jadwal, 0)
 
