@@ -30,7 +30,7 @@ func (u *UsersRepo) FetchUserEmail(email string) (User, error) {
 	return user, err
 }
 
-func (u *UsersRepo) FetchPasienNIK(nik string) (Pasien, error) {
+func (u *UsersRepo) FetchPasienByNIK(nik string) (Pasien, error) {
 	var sqlStmt string
 	var pasien Pasien
 
@@ -145,7 +145,7 @@ func (u *UsersRepo) Register(email, nama, password, nik, gender, tgl_lahir, tmpt
 
 	role := "pasien"
 
-	pasien, _ := u.FetchPasienNIK(nik)
+	pasien, _ := u.FetchPasienByNIK(nik)
 	if pasien.NIK != "" {
 		return errors.New("NIK telah terdaftar")
 	}

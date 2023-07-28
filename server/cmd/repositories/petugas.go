@@ -3,6 +3,7 @@ package repositories
 import (
 	"database/sql"
 	"errors"
+	"time"
 )
 
 type PetugasRepo struct {
@@ -49,4 +50,16 @@ func (prs *PetugasRepo) LihatReservasi() ([]Reservasi, error) {
 	}
 
 	return reservasi, nil
+}
+
+func (prs *PetugasRepo) VerifikasiReservasi(reservasi_id int64, status string) error {
+	var sqlStmt string = `UPDATE reservasi SET status = ?, updated_at = ? WHERE id = ?`
+
+	_, err := prs.db.Exec(sqlStmt, status, time.Now(), reservasi_id)
+
+	if err != nil {
+		return err
+	}
+
+	return err
 }
