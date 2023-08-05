@@ -21,6 +21,7 @@ admin:
 6. lihat data user
 
 dokter:
+1. lihat jadwal
 
 petugas:
 1. lihat reservasi
@@ -35,10 +36,8 @@ all user:
 
 pasien: 
 
-
 dokter:
-1. lihat jadwal
 
 petugas: 
-
+1. ubah jadwal dokter
 

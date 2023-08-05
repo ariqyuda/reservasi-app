@@ -119,4 +119,21 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	_, err = db.Exec(`
+	CREATE TABLE IF NOT EXISTS ganti_password (
+		id INTEGER AUTO_INCREMENT PRIMARY KEY,
+		user_id INTEGER NOT NULL,
+		token STRING VARCHAR(255) NOT NULL,
+		created_at DATETIME NOT NULL,
+		updated_at DATETIME,
+		FOREIGN KEY (user_id) REFERENCES users(id),
+		FOREIGN KEY (dokter_id) REFERENCES dokter(id),
+		FOREIGN KEY (poli_id) REFERENCES poli(id)
+	);
+	`)
+
+	if err != nil {
+		panic(err)
+	}
 }

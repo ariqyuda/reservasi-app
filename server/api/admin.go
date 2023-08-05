@@ -66,7 +66,7 @@ func (api *API) lihatDataUser(w http.ResponseWriter, req *http.Request) {
 
 	userRole := req.URL.Query().Get("role")
 
-	reservasi, err := api.adminRepo.FetchDataUserByRole(userRole)
+	reservasi, err := api.usersRepo.FetchDataUserByRole(userRole)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -127,37 +127,6 @@ func (api *API) insertPetugas(w http.ResponseWriter, req *http.Request) {
 
 	encoder := json.NewEncoder(w)
 	err = api.adminRepo.InsertPetugas(user.Email, user.Name, user.Password)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		encoder.Encode(AuthErrorResponse{Error: err.Error()})
-		return
-	}
-
-	insertUser := Register{
-		Email: user.Email,
-		Name:  user.Name,
-	}
-
-	insertDokterResponse := InsertSuccessResponse{
-		Message: "insert success",
-		Data:    insertUser,
-	}
-
-	json.NewEncoder(w).Encode(insertDokterResponse)
-}
-
-func (api *API) insertAdmin(w http.ResponseWriter, req *http.Request) {
-	api.AllowOrigin(w, req)
-
-	var user Register
-	err := json.NewDecoder(req.Body).Decode(&user)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	encoder := json.NewEncoder(w)
-	err = api.adminRepo.InsertAdmin(user.Email, user.Name, user.Password)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})

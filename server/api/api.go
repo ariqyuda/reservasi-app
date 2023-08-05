@@ -3,24 +3,31 @@ package api
 import (
 	"fmt"
 	"net/http"
-	"tugas-akhir/cmd/repositories"
+	"tugas-akhir/internal/repositories/admin"
+	"tugas-akhir/internal/repositories/auth"
+	"tugas-akhir/internal/repositories/dokter"
+	"tugas-akhir/internal/repositories/pasien"
+	"tugas-akhir/internal/repositories/petugas"
+	"tugas-akhir/internal/repositories/user"
 )
 
 type API struct {
-	usersRepo   repositories.UsersRepo
-	adminRepo   repositories.AdminRepo
-	pasienRepo  repositories.PasienRepo
-	petugasRepo repositories.PetugasRepo
+	usersRepo   user.UserRepo
+	authRepo    auth.AuthRepo
+	adminRepo   admin.AdminRepo
+	pasienRepo  pasien.PasienRepo
+	petugasRepo petugas.PetugasRepo
+	dokterRepo  dokter.DokterRepo
 
 	mux *http.ServeMux
 }
 
-func NewAPI(usersRepo repositories.UsersRepo, adminRepo repositories.AdminRepo,
-	pasienRepo repositories.PasienRepo, petugasRepo repositories.PetugasRepo) API {
+func NewAPI(usersRepo user.UserRepo, authRepo auth.AuthRepo, adminRepo admin.AdminRepo,
+	pasienRepo pasien.PasienRepo, petugasRepo petugas.PetugasRepo, dokterRepo dokter.DokterRepo) API {
 
 	mux := http.NewServeMux()
 	api := API{
-		usersRepo, adminRepo, pasienRepo, petugasRepo, mux,
+		usersRepo, authRepo, adminRepo, pasienRepo, petugasRepo, dokterRepo, mux,
 	}
 
 	// API without middleware
@@ -28,7 +35,8 @@ func NewAPI(usersRepo repositories.UsersRepo, adminRepo repositories.AdminRepo,
 	mux.Handle("/api/login", api.POST(http.HandlerFunc(api.login)))
 	mux.Handle("/api/logout", api.POST(http.HandlerFunc(api.logout)))
 
-	// API fetch data
+	// API dokter
+	mux.Handle("/api/dokter/lihat/jadwal", api.GET(api.AuthMiddleWare(api.DokterMiddleware(http.HandlerFunc(api.lihatJadwalReservasi)))))
 
 	// API pasien with middleware
 	mux.Handle("/api/pasien/lihat/poli", api.GET(api.AuthMiddleWare(http.HandlerFunc(api.lihatPoli))))
@@ -45,7 +53,6 @@ func NewAPI(usersRepo repositories.UsersRepo, adminRepo repositories.AdminRepo,
 	mux.Handle("/api/admin/lihat/data/user", api.GET(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.lihatDataUser)))))
 	mux.Handle("/api/admin/insert/dokter", api.POST(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.insertDokter)))))
 	mux.Handle("/api/admin/insert/petugas", api.POST(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.insertPetugas)))))
-	mux.Handle("/api/admin/insert/admin", api.POST(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.insertAdmin)))))
 	mux.Handle("/api/admin/insert/poli", api.POST(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.insertPoli)))))
 	mux.Handle("/api/admin/insert/dokter/jadwal", api.POST(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.insertJadwalDokter)))))
 	return api
