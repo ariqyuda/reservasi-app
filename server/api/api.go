@@ -46,15 +46,17 @@ func NewAPI(usersRepo user.UserRepo, authRepo auth.AuthRepo, adminRepo admin.Adm
 	mux.Handle("/api/pasien/reservasi/hasil", api.GET(api.AuthMiddleWare(http.HandlerFunc(api.lihatHasilReservasi))))
 
 	// API petugas with middleware
+	mux.Handle("/api/petugas/insert/poli", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.insertPoli)))))
+	mux.Handle("/api/petugas/insert/dokter", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.insertDokter)))))
+	mux.Handle("/api/petugas/insert/jadwal", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.insertJadwalDokter)))))
 	mux.Handle("/api/petugas/lihat/data/reservasi", api.GET(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.lihatReservasiUser)))))
 	mux.Handle("/api/petugas/verifikasi/reservasi", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.verifikasiReservasi)))))
+	mux.Handle("/api/petugas/ubah/jadwal", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.ubahJadwalDokter)))))
 
 	// API admin with middleware
 	mux.Handle("/api/admin/lihat/data/user", api.GET(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.lihatDataUser)))))
-	mux.Handle("/api/admin/insert/dokter", api.POST(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.insertDokter)))))
 	mux.Handle("/api/admin/insert/petugas", api.POST(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.insertPetugas)))))
-	mux.Handle("/api/admin/insert/poli", api.POST(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.insertPoli)))))
-	mux.Handle("/api/admin/insert/dokter/jadwal", api.POST(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.insertJadwalDokter)))))
+
 	return api
 }
 

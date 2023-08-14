@@ -31,9 +31,10 @@ type Poli struct {
 }
 
 type JadwalDokter struct {
-	ID    int64  `json:"id"`
-	Hari  string `json:"jadwal_hari"`
-	Waktu string `json:"jadwal_waktu"`
+	ID            int64  `json:"id"`
+	Hari          string `json:"jadwal_hari"`
+	WaktuMulai    string `json:"jadwal_mulai"`
+	WaktuBerakhir string `json:"jadwal_berakhir"`
 }
 
 type FetchUserSuccessResponse struct {
@@ -41,24 +42,9 @@ type FetchUserSuccessResponse struct {
 	Data    interface{} `json:"data"`
 }
 
-type InsertDokterSuccessResponse struct {
-	Message string `json:"message"`
-	Data    Dokter `json:"data"`
-}
-
 type InsertSuccessResponse struct {
 	Message string   `json:"message"`
 	Data    Register `json:"data"`
-}
-
-type InsertJadwalDokterSuccessResponse struct {
-	Message string       `json:"message"`
-	Data    JadwalDokter `json:"data"`
-}
-
-type InsertPoliSuccessResponse struct {
-	Message string `json:"message"`
-	Data    Poli   `json:"data"`
 }
 
 func (api *API) lihatDataUser(w http.ResponseWriter, req *http.Request) {
@@ -81,38 +67,6 @@ func (api *API) lihatDataUser(w http.ResponseWriter, req *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(fetchUserResponse)
-}
-
-func (api *API) insertDokter(w http.ResponseWriter, req *http.Request) {
-	api.AllowOrigin(w, req)
-
-	var dokter Dokter
-	err := json.NewDecoder(req.Body).Decode(&dokter)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	encoder := json.NewEncoder(w)
-	err = api.adminRepo.InsertDokter(dokter.Email, dokter.Name, dokter.Password, dokter.Poli)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		encoder.Encode(AuthErrorResponse{Error: err.Error()})
-		return
-	}
-
-	insertDokter := Dokter{
-		Email: dokter.Email,
-		Name:  dokter.Name,
-		Poli:  dokter.Poli,
-	}
-
-	insertDokterResponse := InsertDokterSuccessResponse{
-		Message: "insert success",
-		Data:    insertDokter,
-	}
-
-	json.NewEncoder(w).Encode(insertDokterResponse)
 }
 
 func (api *API) insertPetugas(w http.ResponseWriter, req *http.Request) {
@@ -141,68 +95,6 @@ func (api *API) insertPetugas(w http.ResponseWriter, req *http.Request) {
 	insertDokterResponse := InsertSuccessResponse{
 		Message: "insert success",
 		Data:    insertUser,
-	}
-
-	json.NewEncoder(w).Encode(insertDokterResponse)
-}
-
-func (api *API) insertJadwalDokter(w http.ResponseWriter, req *http.Request) {
-	api.AllowOrigin(w, req)
-
-	var jadwal JadwalDokter
-	err := json.NewDecoder(req.Body).Decode(&jadwal)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	encoder := json.NewEncoder(w)
-	err = api.adminRepo.InsertJadwal(jadwal.ID, jadwal.Hari, jadwal.Waktu)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		encoder.Encode(AuthErrorResponse{Error: err.Error()})
-		return
-	}
-
-	insertJadwalDokter := JadwalDokter{
-		ID:    jadwal.ID,
-		Hari:  jadwal.Hari,
-		Waktu: jadwal.Waktu,
-	}
-
-	insertDokterResponse := InsertJadwalDokterSuccessResponse{
-		Message: "insert success",
-		Data:    insertJadwalDokter,
-	}
-
-	json.NewEncoder(w).Encode(insertDokterResponse)
-}
-
-func (api *API) insertPoli(w http.ResponseWriter, req *http.Request) {
-	api.AllowOrigin(w, req)
-
-	var poli Poli
-	err := json.NewDecoder(req.Body).Decode(&poli)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	encoder := json.NewEncoder(w)
-	err = api.adminRepo.InsertPoli(poli.Name)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		encoder.Encode(AuthErrorResponse{Error: err.Error()})
-		return
-	}
-
-	insertPoli := Poli{
-		Name: poli.Name,
-	}
-
-	insertDokterResponse := InsertPoliSuccessResponse{
-		Message: "insert success",
-		Data:    insertPoli,
 	}
 
 	json.NewEncoder(w).Encode(insertDokterResponse)

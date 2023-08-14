@@ -1,43 +1,42 @@
 daftar api yang sudah ada
 
 all user:
-1. register
-2. login
-3. logout
+- register
+- login
+- logout
 
 pasien: 
-1. reservasi pribadi
-2. lihat riwayat reservasi
-3. lihat hasil reservasi
-4. lihat jadwal dokter
-5. lihat poli
+- reservasi pribadi
+- lihat riwayat reservasi
+- lihat hasil reservasi
+- lihat jadwal dokter
+- lihat poli
 
 admin: 
-1. insert dokter
-2. insert jadwal dokter
-3. insert poli
-4. insert petugas
-5. insert admin
-6. lihat data user
+- insert petugas
+- lihat data user
 
 dokter:
-1. lihat jadwal
+- lihat jadwal
 
 petugas:
-1. lihat reservasi
-2. verifikasi reservasi
+- lihat reservasi
+- verifikasi reservasi
+- insert dokter
+- insert jadwal dokter
+- insert poli
+- ubah jadwal dokter
 
 ===============================
 
 daftar rencana api
 
 all user:
-1. ganti password
 
 pasien: 
 
 dokter:
 
 petugas: 
-1. ubah jadwal dokter
+- unduh laporan
 
