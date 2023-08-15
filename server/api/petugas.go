@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -107,7 +108,7 @@ func (api *API) insertJadwalDokter(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.petugasRepo.InsertJadwal(jadwal.ID, jadwal.Hari, jadwal.WaktuMulai, jadwal.WaktuBerakhir)
+	err = api.petugasRepo.InsertJadwal(jadwal.DokterID, jadwal.Hari, jadwal.WaktuMulai, jadwal.WaktuBerakhir)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
@@ -115,7 +116,7 @@ func (api *API) insertJadwalDokter(w http.ResponseWriter, req *http.Request) {
 	}
 
 	insertJadwalDokter := JadwalDokter{
-		ID:            jadwal.ID,
+		DokterID:      jadwal.DokterID,
 		Hari:          jadwal.Hari,
 		WaktuMulai:    jadwal.WaktuMulai,
 		WaktuBerakhir: jadwal.WaktuBerakhir,
@@ -167,6 +168,9 @@ func (api *API) verifikasiReservasi(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	fmt.Println(bodyRequest.ID)
+	fmt.Println(bodyRequest.Status)
+
 	verifikasiResponse := VerifikasiResponse{
 		Message: "Berhasil merubah status reservasi",
 	}
@@ -185,7 +189,7 @@ func (api *API) ubahJadwalDokter(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.petugasRepo.UbahJadwalDokter(bodyRequest.ID, bodyRequest.Hari, bodyRequest.WaktuMulai, bodyRequest.WaktuBerakhir)
+	err = api.petugasRepo.UbahJadwalDokter(bodyRequest.DokterID, bodyRequest.Hari, bodyRequest.WaktuMulai, bodyRequest.WaktuBerakhir)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})

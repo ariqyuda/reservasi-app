@@ -31,7 +31,7 @@ type Poli struct {
 }
 
 type JadwalDokter struct {
-	ID            int64  `json:"id"`
+	DokterID      int64  `json:"id_dokter"`
 	Hari          string `json:"jadwal_hari"`
 	WaktuMulai    string `json:"jadwal_mulai"`
 	WaktuBerakhir string `json:"jadwal_berakhir"`
@@ -52,7 +52,7 @@ func (api *API) lihatDataUser(w http.ResponseWriter, req *http.Request) {
 
 	userRole := req.URL.Query().Get("role")
 
-	reservasi, err := api.usersRepo.FetchDataUserByRole(userRole)
+	userData, err := api.usersRepo.FetchDataUserByRole(userRole)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -63,7 +63,7 @@ func (api *API) lihatDataUser(w http.ResponseWriter, req *http.Request) {
 	}()
 	fetchUserResponse := FetchUserSuccessResponse{
 		Message: "success",
-		Data:    reservasi,
+		Data:    userData,
 	}
 
 	json.NewEncoder(w).Encode(fetchUserResponse)
@@ -92,10 +92,10 @@ func (api *API) insertPetugas(w http.ResponseWriter, req *http.Request) {
 		Name:  user.Name,
 	}
 
-	insertDokterResponse := InsertSuccessResponse{
+	insertPetugasResponse := InsertSuccessResponse{
 		Message: "insert success",
 		Data:    insertUser,
 	}
 
-	json.NewEncoder(w).Encode(insertDokterResponse)
+	json.NewEncoder(w).Encode(insertPetugasResponse)
 }
