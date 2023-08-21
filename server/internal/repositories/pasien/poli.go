@@ -5,6 +5,18 @@ import (
 	"tugas-akhir/internal/repositories/model"
 )
 
+func (p *PasienRepo) FetchPoliID(nama string) (*int64, error) {
+	var sqlStmt string
+	var id int64
+
+	sqlStmt = `SELECT id FROM poli WHERE nama = ?`
+
+	row := p.db.QueryRow(sqlStmt, nama)
+	err := row.Scan(&id)
+
+	return &id, err
+}
+
 func (p *PasienRepo) FetchPoli() ([]model.Poli, error) {
 	var poli []model.Poli = make([]model.Poli, 0)
 

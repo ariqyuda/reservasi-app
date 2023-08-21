@@ -39,4 +39,5 @@ dokter:
 
 petugas: 
 - unduh laporan
+- edit laporan
 

@@ -3,15 +3,12 @@ package pasien
 import (
 	"errors"
 	"tugas-akhir/internal/repositories/model"
-	"tugas-akhir/internal/repositories/user"
 )
 
 func (p *PasienRepo) FetchJadwalDokterByPoli(poli_nama string) ([]model.Jadwal, error) {
 	var jadwal []model.Jadwal = make([]model.Jadwal, 0)
 
-	userRepo := user.NewUserRepositories(p.db)
-
-	poliID, _ := userRepo.FetchPoliID(poli_nama)
+	poliID, _ := p.FetchPoliID(poli_nama)
 
 	var sqlStmt string = `SELECT d.nama, j.jadwal_hari, j.jadwal_waktu
 		FROM dokter d

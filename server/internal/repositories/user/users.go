@@ -104,21 +104,30 @@ func HashPassword(password string) (string, error) {
 	return string(bytes), err
 }
 
-func (u *UserRepo) FetchPoliID(nama string) (*int64, error) {
-	var sqlStmt string
-	var id int64
+func (u *UserRepo) CheckUserInput(email, nama, password, nik, gender, tgl_lahir, tmpt_lahir, alamat, no_hp, ktp_pasien string) error {
+	if len(email) < 1 || len(nama) < 1 || len(password) < 1 || len(nik) < 1 || len(gender) < 1 || len(tgl_lahir) < 1 ||
+		len(tmpt_lahir) < 1 || len(alamat) < 1 || len(no_hp) < 1 || len(ktp_pasien) < 1 {
+		return errors.New("data tidak boleh kosong")
+	}
 
-	sqlStmt = `SELECT id FROM poli WHERE nama = ?`
+	if len(nik) > 16 {
+		return errors.New("nik tidak boleh lebih dari 16 karakter")
+	}
 
-	row := u.db.QueryRow(sqlStmt, nama)
-	err := row.Scan(&id)
+	checkNIK := regexp.MustCompile(`^[0-9]+$`).MatchString(nik)
+	if !checkNIK {
+		return errors.New("nik hanya boleh mengandung angka")
+	}
 
-	return &id, err
+	checkNoHP := regexp.MustCompile(`^[0-9]+$`).MatchString(no_hp)
+	if !checkNoHP {
+		return errors.New("format no hp salah")
+	}
+
+	return nil
 }
 
 func (u *UserRepo) InsertUser(email, nama, role, password string) error {
-	var sqlStmt string
-
 	// email checking
 	// check format email
 	checkEmailFormat := strings.Contains(email, "@gmail.com")
@@ -162,7 +171,7 @@ func (u *UserRepo) InsertUser(email, nama, role, password string) error {
 
 	// insert to database
 	// query untuk insert user
-	sqlStmt = `INSERT INTO USERS (email, nama, password, role, created_at) VALUES (?, ?, ?, ?, ?)`
+	var sqlStmt = `INSERT INTO USERS (email, nama, password, role, created_at) VALUES (?, ?, ?, ?, ?)`
 
 	_, err := u.db.Exec(sqlStmt, email, nama, hashPassword, role, time.Now())
 	if err != nil {

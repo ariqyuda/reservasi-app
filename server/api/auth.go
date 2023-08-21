@@ -25,6 +25,7 @@ type Pasien struct {
 	BornPlace   string `json:"tmpt_lahir_pasien"`
 	Adress      string `json:"alamat_pasien"`
 	PhoneNumber string `json:"no_hp_pasien"`
+	KTP         string `json:"ktp_pasien"`
 }
 
 type RegisterSuccessResponse struct {
@@ -62,7 +63,7 @@ func (api *API) register(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.authRepo.Register(pasien.Email, pasien.Name, pasien.Password, pasien.NIK, pasien.Gender, pasien.BornDate, pasien.BornPlace, pasien.Adress, pasien.PhoneNumber)
+	err = api.authRepo.Register(pasien.Email, pasien.Name, pasien.Password, pasien.NIK, pasien.Gender, pasien.BornDate, pasien.BornPlace, pasien.Adress, pasien.PhoneNumber, pasien.KTP)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
@@ -78,6 +79,7 @@ func (api *API) register(w http.ResponseWriter, req *http.Request) {
 		BornPlace:   pasien.BornPlace,
 		Adress:      pasien.Adress,
 		PhoneNumber: pasien.PhoneNumber,
+		KTP:         pasien.KTP,
 	}
 
 	registerResponse := RegisterSuccessResponse{

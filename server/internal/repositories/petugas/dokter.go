@@ -2,6 +2,7 @@ package petugas
 
 import (
 	"time"
+	"tugas-akhir/internal/repositories/pasien"
 	"tugas-akhir/internal/repositories/user"
 )
 
@@ -9,6 +10,7 @@ func (prs *PetugasRepo) InsertDokter(email, nama, password, poli_nama string) er
 	role := "dokter"
 
 	userRepo := user.NewUserRepositories(prs.db)
+	pasienRepo := pasien.NewPasienRepositories(prs.db)
 
 	err := userRepo.InsertUser(email, nama, role, password)
 	if err != nil {
@@ -16,7 +18,7 @@ func (prs *PetugasRepo) InsertDokter(email, nama, password, poli_nama string) er
 	}
 
 	idUser, _ := userRepo.FetchUserID(email)
-	poliID, _ := userRepo.FetchPoliID(poli_nama)
+	poliID, _ := pasienRepo.FetchPoliID(poli_nama)
 
 	sqlStmt := `INSERT INTO dokter (user_id, poli_id, nama, created_at) VALUES (?, ?, ?, ?)`
 

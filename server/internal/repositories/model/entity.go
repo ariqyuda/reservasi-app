@@ -22,12 +22,14 @@ type Pasien struct {
 	BornPlace   string    `db:"tmpt_lhr_pasien"`
 	Adress      string    `db:"alamat_pasien"`
 	PhoneNumber string    `db:"no_hp_pasien"`
+	KTP         string    `json:"ktp_pasien"`
 	CreatedAt   time.Time `db:"created_at"`
 }
 
 type Dokter struct {
 	ID        int64     `db:"id"`
 	UserID    int64     `db:"user_id"`
+	Nama      string    `db:"nama_dokter"`
 	Role      string    `json:"role"`
 	Hari      string    `json:"jadwal_hari"`
 	Waktu     string    `json:"jadwal_waktu"`
