@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -13,17 +12,7 @@ type Jadwal struct {
 	Jadwal_Waktu   string `json:"jadwal_waktu"`
 }
 
-type FetchJadwalSuccessResponse struct {
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
-}
-
-type FetchPoliSuccessResponse struct {
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
-}
-
-type ReservasiSuccessResponse struct {
+type PasienSuccessResponse struct {
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
 }
@@ -34,6 +23,57 @@ type ReservasiErrorResponse struct {
 
 type PasienErrorResponse struct {
 	Error string `json:"error"`
+}
+
+func (api *API) lihatDataDiri(w http.ResponseWriter, req *http.Request) {
+	api.AllowOrigin(w, req)
+
+	userID := req.Context().Value("id").(int64)
+
+	pasien, err := api.pasienRepo.FetchDataDiriByID(userID)
+	encoder := json.NewEncoder(w)
+	w.Header().Set("Content-Type", "application/json")
+	defer func() {
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			encoder.Encode(ReservasiErrorResponse{Error: err.Error()})
+		}
+	}()
+	fetchDataDiriResponse := PasienSuccessResponse{
+		Message: "success",
+		Data:    pasien,
+	}
+
+	json.NewEncoder(w).Encode(fetchDataDiriResponse)
+}
+
+func (api *API) ubahDataDiri(w http.ResponseWriter, req *http.Request) {
+	api.AllowOrigin(w, req)
+
+	userID := req.Context().Value("id").(int64)
+
+	var bodyRequest Pasien
+	err := json.NewDecoder(req.Body).Decode(&bodyRequest)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	encoder := json.NewEncoder(w)
+	err = api.pasienRepo.UbahDataDiri(userID, bodyRequest.NIK, bodyRequest.Nama, bodyRequest.Gender, bodyRequest.BornDate, bodyRequest.BornPlace,
+		bodyRequest.Adress, bodyRequest.PhoneNumber, bodyRequest.KTP)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		encoder.Encode(AuthErrorResponse{Error: err.Error()})
+		return
+	}
+
+	ubahDataDiriResponse := PasienSuccessResponse{
+		Message: "Berhasil melakukan perubahan data diri",
+		Data:    bodyRequest,
+	}
+
+	json.NewEncoder(w).Encode(ubahDataDiriResponse)
 }
 
 func (api *API) lihatPoli(w http.ResponseWriter, req *http.Request) {
@@ -48,12 +88,12 @@ func (api *API) lihatPoli(w http.ResponseWriter, req *http.Request) {
 			encoder.Encode(ReservasiErrorResponse{Error: err.Error()})
 		}
 	}()
-	fetchJadwalResponse := FetchPoliSuccessResponse{
+	fetchPoliResponse := PasienSuccessResponse{
 		Message: "success",
 		Data:    poli,
 	}
 
-	json.NewEncoder(w).Encode(fetchJadwalResponse)
+	json.NewEncoder(w).Encode(fetchPoliResponse)
 }
 
 func (api *API) lihatJadwalDokter(w http.ResponseWriter, req *http.Request) {
@@ -70,7 +110,7 @@ func (api *API) lihatJadwalDokter(w http.ResponseWriter, req *http.Request) {
 			encoder.Encode(ReservasiErrorResponse{Error: err.Error()})
 		}
 	}()
-	fetchJadwalResponse := FetchJadwalSuccessResponse{
+	fetchJadwalResponse := PasienSuccessResponse{
 		Message: "success",
 		Data:    reservasi,
 	}
@@ -90,9 +130,6 @@ func (api *API) reservasiPribadi(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	fmt.Println(jadwal.ID)
-	fmt.Println(jadwal.Jadwal_Tanggal)
-
 	encoder := json.NewEncoder(w)
 	err = api.pasienRepo.ReservasiPribadi(int64(userID), jadwal.ID, jadwal.Jadwal_Tanggal)
 	if err != nil {
@@ -101,7 +138,7 @@ func (api *API) reservasiPribadi(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	reservasiResponse := ReservasiSuccessResponse{
+	reservasiResponse := PasienSuccessResponse{
 		Message: "reservasi berhasil",
 		Data:    jadwal,
 	}
@@ -123,7 +160,7 @@ func (api *API) lihatReservasi(w http.ResponseWriter, req *http.Request) {
 			encoder.Encode(ReservasiErrorResponse{Error: err.Error()})
 		}
 	}()
-	reservasiResponse := ReservasiSuccessResponse{
+	reservasiResponse := PasienSuccessResponse{
 		Message: "success",
 		Data:    dataReservasi,
 	}
@@ -144,7 +181,7 @@ func (api *API) lihatHasilReservasi(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	reservasiResponse := ReservasiSuccessResponse{
+	reservasiResponse := PasienSuccessResponse{
 		Message: "success",
 		Data:    hasilReservasi,
 	}

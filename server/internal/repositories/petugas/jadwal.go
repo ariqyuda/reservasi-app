@@ -16,11 +16,11 @@ func (prs *PetugasRepo) InsertJadwal(id_dokter int64, jadwal_hari, jadwal_mulai,
 }
 
 func (prs *PetugasRepo) UbahJadwalDokter(reservasi_id int64, jadwal_hari, jadwal_mulai, jadwal_berakhir string) error {
-	var sqlStmt string = `UPDATE jadwal_dokter SET jadwal_hari = ?, jadwal_waktu = ? WHERE id = ?`
+	var sqlStmt string = `UPDATE jadwal_dokter SET jadwal_hari = ?, jadwal_waktu = ?, updated_at = ? WHERE id = ?`
 
 	jadwal_waktu := jadwal_mulai + " - " + jadwal_berakhir
 
-	_, err := prs.db.Exec(sqlStmt, jadwal_hari, jadwal_waktu, reservasi_id)
+	_, err := prs.db.Exec(sqlStmt, jadwal_hari, jadwal_waktu, time.Now(), reservasi_id)
 
 	if err != nil {
 		return err

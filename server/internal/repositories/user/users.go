@@ -69,6 +69,16 @@ func (u *UserRepo) FetchUserID(email string) (*int64, error) {
 	return &id, err
 }
 
+func (u *UserRepo) FetchPasienID(user_id int64) (*int64, error) {
+	var sqlStmt string = `SELECT id FROM pasien WHERE user_id = ?`
+	var id int64
+
+	row := u.db.QueryRow(sqlStmt, user_id)
+	err := row.Scan(&id)
+
+	return &id, err
+}
+
 func (u *UserRepo) FetchDataUserByRole(user_role string) ([]model.User, error) {
 	var user []model.User = make([]model.User, 0)
 
@@ -105,11 +115,14 @@ func HashPassword(password string) (string, error) {
 }
 
 func (u *UserRepo) CheckUserInput(email, nama, password, nik, gender, tgl_lahir, tmpt_lahir, alamat, no_hp, ktp_pasien string) error {
+
+	//check data input
 	if len(email) < 1 || len(nama) < 1 || len(password) < 1 || len(nik) < 1 || len(gender) < 1 || len(tgl_lahir) < 1 ||
 		len(tmpt_lahir) < 1 || len(alamat) < 1 || len(no_hp) < 1 || len(ktp_pasien) < 1 {
 		return errors.New("data tidak boleh kosong")
 	}
 
+	//check format nik
 	if len(nik) > 16 {
 		return errors.New("nik tidak boleh lebih dari 16 karakter")
 	}
@@ -119,6 +132,7 @@ func (u *UserRepo) CheckUserInput(email, nama, password, nik, gender, tgl_lahir,
 		return errors.New("nik hanya boleh mengandung angka")
 	}
 
+	//check format no hp
 	checkNoHP := regexp.MustCompile(`^[0-9]+$`).MatchString(no_hp)
 	if !checkNoHP {
 		return errors.New("format no hp salah")

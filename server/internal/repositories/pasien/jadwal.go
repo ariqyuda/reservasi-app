@@ -5,10 +5,10 @@ import (
 	"tugas-akhir/internal/repositories/model"
 )
 
-func (p *PasienRepo) FetchJadwalDokterByPoli(poli_nama string) ([]model.Jadwal, error) {
+func (p *PasienRepo) FetchJadwalDokterByPoli(slug string) ([]model.Jadwal, error) {
 	var jadwal []model.Jadwal = make([]model.Jadwal, 0)
 
-	poliID, _ := p.FetchPoliID(poli_nama)
+	poliID, _ := p.FetchPoliID(slug)
 
 	var sqlStmt string = `SELECT d.nama, j.jadwal_hari, j.jadwal_waktu
 		FROM dokter d

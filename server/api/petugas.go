@@ -142,7 +142,7 @@ func (api *API) lihatReservasiUser(w http.ResponseWriter, req *http.Request) {
 			encoder.Encode(ReservasiErrorResponse{Error: err.Error()})
 		}
 	}()
-	reservasiResponse := ReservasiSuccessResponse{
+	reservasiResponse := ReservasiResponse{
 		Message: "success",
 		Data:    reservasi,
 	}

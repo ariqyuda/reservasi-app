@@ -11,6 +11,8 @@ pasien:
 - lihat hasil reservasi
 - lihat jadwal dokter
 - lihat poli
+- lihat data diri
+- ubah data diri
 
 admin: 
 - insert petugas
@@ -32,12 +34,13 @@ petugas:
 daftar rencana api
 
 all user:
+- ubah password
 
 pasien: 
 
 dokter:
 
 petugas: 
-- unduh laporan
-- edit laporan
+- kirim data laporan
+- edit poli
 

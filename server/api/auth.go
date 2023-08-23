@@ -17,7 +17,7 @@ type User struct {
 
 type Pasien struct {
 	Email       string `json:"email"`
-	Name        string `json:"nama"`
+	Nama        string `json:"nama"`
 	Password    string `json:"password"`
 	NIK         string `json:"nik_pasien"`
 	Gender      string `json:"jk_pasien"`
@@ -63,7 +63,7 @@ func (api *API) register(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.authRepo.Register(pasien.Email, pasien.Name, pasien.Password, pasien.NIK, pasien.Gender, pasien.BornDate, pasien.BornPlace, pasien.Adress, pasien.PhoneNumber, pasien.KTP)
+	err = api.authRepo.Register(pasien.Email, pasien.Nama, pasien.Password, pasien.NIK, pasien.Gender, pasien.BornDate, pasien.BornPlace, pasien.Adress, pasien.PhoneNumber, pasien.KTP)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
@@ -72,7 +72,7 @@ func (api *API) register(w http.ResponseWriter, req *http.Request) {
 
 	registerPasien := Pasien{
 		Email:       pasien.Email,
-		Name:        pasien.Name,
+		Nama:        pasien.Nama,
 		NIK:         pasien.NIK,
 		Gender:      pasien.Gender,
 		BornDate:    pasien.BornDate,
