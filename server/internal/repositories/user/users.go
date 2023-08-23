@@ -20,10 +20,9 @@ func NewUserRepositories(db *sql.DB) *UserRepo {
 }
 
 func (u *UserRepo) FetchUserEmail(email string) (model.User, error) {
-	var sqlStmt string
 	var user model.User
 
-	sqlStmt = `SELECT email FROM users WHERE email = ?`
+	var sqlStmt string = `SELECT email FROM users WHERE email = ?`
 
 	row := u.db.QueryRow(sqlStmt, email)
 	err := row.Scan(&user.Email)
@@ -32,10 +31,9 @@ func (u *UserRepo) FetchUserEmail(email string) (model.User, error) {
 }
 
 func (u *UserRepo) FetchPasienByNIK(nik string) (model.Pasien, error) {
-	var sqlStmt string
 	var pasien model.Pasien
 
-	sqlStmt = `SELECT nik_pasien FROM pasien WHERE nik_pasien = ?`
+	var sqlStmt string = `SELECT nik_pasien FROM pasien WHERE nik_pasien = ?`
 
 	row := u.db.QueryRow(sqlStmt, nik)
 	err := row.Scan(&pasien.NIK)
@@ -44,11 +42,10 @@ func (u *UserRepo) FetchPasienByNIK(nik string) (model.Pasien, error) {
 }
 
 func (u *UserRepo) FetchUserRole(email string) (*string, error) {
-	var sqlStmt string
 	var role string
 
 	// query untuk mengambil role user berdasarkan email
-	sqlStmt = `SELECT role FROM users WHERE email = ?`
+	var sqlStmt string = `SELECT role FROM users WHERE email = ?`
 
 	row := u.db.QueryRow(sqlStmt, email)
 	err := row.Scan(&role)
@@ -57,11 +54,10 @@ func (u *UserRepo) FetchUserRole(email string) (*string, error) {
 }
 
 func (u *UserRepo) FetchUserID(email string) (*int64, error) {
-	var sqlStmt string
 	var id int64
 
 	// query untuk mengambil id user berdasarkan email
-	sqlStmt = `SELECT id FROM users WHERE email = ?`
+	var sqlStmt string = `SELECT id FROM users WHERE email = ?`
 
 	row := u.db.QueryRow(sqlStmt, email)
 	err := row.Scan(&id)
