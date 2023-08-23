@@ -5,7 +5,19 @@ import (
 	"tugas-akhir/internal/repositories/model"
 )
 
-func (p *PasienRepo) FetchPoliID(slug string) (*int64, error) {
+func (p *PasienRepo) FetchPoliIDByNama(slug string) (*int64, error) {
+	var sqlStmt string
+	var id int64
+
+	sqlStmt = `SELECT id FROM poli WHERE slug = ?`
+
+	row := p.db.QueryRow(sqlStmt, slug)
+	err := row.Scan(&id)
+
+	return &id, err
+}
+
+func (p *PasienRepo) FetchPoliIDBySlug(slug string) (*int64, error) {
 	var sqlStmt string
 	var id int64
 

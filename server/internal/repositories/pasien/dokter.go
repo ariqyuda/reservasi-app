@@ -8,7 +8,7 @@ import (
 func (p *PasienRepo) FetchDokterByPoli(poli_nama string) ([]model.Dokter, error) {
 	var dokter []model.Dokter = make([]model.Dokter, 0)
 
-	poliID, _ := p.FetchPoliID(poli_nama)
+	poliID, _ := p.FetchPoliIDByNama(poli_nama)
 
 	var sqlStmt string = `SELECT id, nama from DOKTER where poli_id = ?`
 

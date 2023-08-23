@@ -8,7 +8,7 @@ import (
 func (p *PasienRepo) FetchJadwalDokterByPoli(slug string) ([]model.Jadwal, error) {
 	var jadwal []model.Jadwal = make([]model.Jadwal, 0)
 
-	poliID, _ := p.FetchPoliID(slug)
+	poliID, _ := p.FetchPoliIDBySlug(slug)
 
 	var sqlStmt string = `SELECT d.nama, j.jadwal_hari, j.jadwal_waktu
 		FROM dokter d
