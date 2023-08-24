@@ -4,7 +4,7 @@ import "time"
 
 func (prs *PetugasRepo) InsertJadwal(id_dokter int64, jadwal_hari, jadwal_mulai, jadwal_berakhir string) error {
 
-	jadwal_waktu := jadwal_mulai + "-" + jadwal_berakhir
+	jadwal_waktu := jadwal_mulai + " - " + jadwal_berakhir
 
 	sqlStmt := `INSERT INTO jadwal_dokter (dokter_id, jadwal_hari, jadwal_waktu, created_at) VALUES (?, ?, ?, ?)`
 	_, err := prs.db.Exec(sqlStmt, id_dokter, jadwal_hari, jadwal_waktu, time.Now())

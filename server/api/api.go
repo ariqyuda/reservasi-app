@@ -53,6 +53,7 @@ func NewAPI(usersRepo user.UserRepo, authRepo auth.AuthRepo, adminRepo admin.Adm
 	mux.Handle("/api/petugas/insert/jadwal", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.insertJadwalDokter)))))
 	mux.Handle("/api/petugas/lihat/data/reservasi", api.GET(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.lihatReservasiUser)))))
 	mux.Handle("/api/petugas/verifikasi/reservasi", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.verifikasiReservasi)))))
+	mux.Handle("/api/petugas/ubah/poli", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.ubahPoli)))))
 	mux.Handle("/api/petugas/ubah/jadwal", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.ubahJadwalDokter)))))
 
 	// API admin with middleware

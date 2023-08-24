@@ -160,12 +160,12 @@ func (api *API) lihatReservasi(w http.ResponseWriter, req *http.Request) {
 			encoder.Encode(ReservasiErrorResponse{Error: err.Error()})
 		}
 	}()
-	reservasiResponse := PasienSuccessResponse{
+	lihatReservasiResponse := PasienSuccessResponse{
 		Message: "success",
 		Data:    dataReservasi,
 	}
 
-	encoder.Encode(reservasiResponse)
+	encoder.Encode(lihatReservasiResponse)
 }
 
 func (api *API) lihatHasilReservasi(w http.ResponseWriter, req *http.Request) {
@@ -181,10 +181,10 @@ func (api *API) lihatHasilReservasi(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	reservasiResponse := PasienSuccessResponse{
+	lihatHasilResponse := PasienSuccessResponse{
 		Message: "success",
 		Data:    hasilReservasi,
 	}
 
-	encoder.Encode(reservasiResponse)
+	encoder.Encode(lihatHasilResponse)
 }
