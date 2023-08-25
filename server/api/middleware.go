@@ -41,22 +41,6 @@ func (api *API) AuthMiddleWare(next http.Handler) http.Handler {
 		}
 		tokenSplit := strings.Split(token, " ")
 		jwtToken := tokenSplit[1]
-		// Ambil token dari cookie yang dikirim ketika request
-		// c, err := r.Cookie("token")
-		// if err != nil {
-		// 	if err == http.ErrNoCookie {
-		// 		// return unauthorized ketika token kosong
-		// 		w.WriteHeader(http.StatusUnauthorized)
-		// 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
-		// 		return
-		// 	}
-		// 	// return bad request ketika field token tidak ada
-		// 	w.WriteHeader(http.StatusBadRequest)
-		// 	encoder.Encode(AuthErrorResponse{Error: err.Error()})
-		// 	return
-		// }
-
-		// tknStr := c.Value
 
 		claims := &CLaims{}
 

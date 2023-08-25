@@ -13,28 +13,10 @@ type AdminResponse struct {
 	Error string `json:"error"`
 }
 
-type Dokter struct {
+type Petugas struct {
 	Email    string `json:"email"`
 	Name     string `json:"nama"`
 	Password string `json:"password"`
-	Poli     string `json:"nama_poli"`
-}
-
-type Register struct {
-	Email    string `json:"email"`
-	Name     string `json:"nama"`
-	Password string `json:"password"`
-}
-
-type Poli struct {
-	Name string `json:"nama_poli"`
-}
-
-type JadwalDokter struct {
-	DokterID      int64  `json:"id_dokter"`
-	Hari          string `json:"jadwal_hari"`
-	WaktuMulai    string `json:"jadwal_mulai"`
-	WaktuBerakhir string `json:"jadwal_berakhir"`
 }
 
 type FetchUserSuccessResponse struct {
@@ -42,9 +24,9 @@ type FetchUserSuccessResponse struct {
 	Data    interface{} `json:"data"`
 }
 
-type InsertSuccessResponse struct {
-	Message string   `json:"message"`
-	Data    Register `json:"data"`
+type InsertPetugasSuccessResponse struct {
+	Message string  `json:"message"`
+	Data    Petugas `json:"data"`
 }
 
 func (api *API) lihatDataUser(w http.ResponseWriter, req *http.Request) {
@@ -72,27 +54,27 @@ func (api *API) lihatDataUser(w http.ResponseWriter, req *http.Request) {
 func (api *API) insertPetugas(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	var user Register
-	err := json.NewDecoder(req.Body).Decode(&user)
+	var petugas Petugas
+	err := json.NewDecoder(req.Body).Decode(&petugas)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.adminRepo.InsertPetugas(user.Email, user.Name, user.Password)
+	err = api.adminRepo.InsertPetugas(petugas.Email, petugas.Name, petugas.Password)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
 		return
 	}
 
-	insertUser := Register{
-		Email: user.Email,
-		Name:  user.Name,
+	insertUser := Petugas{
+		Email: petugas.Email,
+		Name:  petugas.Name,
 	}
 
-	insertPetugasResponse := InsertSuccessResponse{
+	insertPetugasResponse := InsertPetugasSuccessResponse{
 		Message: "insert success",
 		Data:    insertUser,
 	}

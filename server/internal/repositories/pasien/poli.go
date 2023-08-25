@@ -32,7 +32,7 @@ func (p *PasienRepo) FetchPoliIDBySlug(slug string) (*int64, error) {
 func (p *PasienRepo) FetchPoli() ([]model.Poli, error) {
 	var poli []model.Poli = make([]model.Poli, 0)
 
-	var sqlStmt string = `SELECT id, nama FROM poli`
+	var sqlStmt string = `SELECT id, nama, slug FROM poli`
 
 	rows, err := p.db.Query(sqlStmt)
 	if err != nil {
@@ -46,6 +46,7 @@ func (p *PasienRepo) FetchPoli() ([]model.Poli, error) {
 		err := rows.Scan(
 			&dataPoli.ID,
 			&dataPoli.Name,
+			&dataPoli.Slug,
 		)
 
 		if err != nil {

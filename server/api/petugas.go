@@ -5,6 +5,41 @@ import (
 	"net/http"
 )
 
+type Poli struct {
+	Name string `json:"nama_poli"`
+}
+
+type Dokter struct {
+	Email    string `json:"email"`
+	Name     string `json:"nama"`
+	Password string `json:"password"`
+	Poli     string `json:"nama_poli"`
+}
+
+type JadwalDokter struct {
+	DokterID      int64  `json:"id_dokter"`
+	Hari          string `json:"jadwal_hari"`
+	WaktuMulai    string `json:"jadwal_mulai"`
+	WaktuBerakhir string `json:"jadwal_berakhir"`
+}
+
+type UbahPoli struct {
+	ID   int64  `db:"id"`
+	Nama string `db:"nama"`
+}
+
+type UbahJadwalDokter struct {
+	ReservasiID   int64  `json:"id"`
+	Hari          string `json:"jadwal_hari"`
+	WaktuMulai    string `json:"jadwal_mulai"`
+	WaktuBerakhir string `json:"jadwal_berakhir"`
+}
+
+type VerifReservasi struct {
+	ID     int64  `db:"id"`
+	Status string `db:"status"`
+}
+
 type InsertPoliSuccessResponse struct {
 	Message string `json:"message"`
 	Data    Poli   `json:"data"`
@@ -20,26 +55,9 @@ type InsertJadwalDokterSuccessResponse struct {
 	Data    JadwalDokter `json:"data"`
 }
 
-type UbahJadwalDokter struct {
-	ReservasiID   int64  `json:"id"`
-	Hari          string `json:"jadwal_hari"`
-	WaktuMulai    string `json:"jadwal_mulai"`
-	WaktuBerakhir string `json:"jadwal_berakhir"`
-}
-
 type ReservasiResponse struct {
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
-}
-
-type VerifReservasi struct {
-	ID     int64  `db:"id"`
-	Status string `db:"status"`
-}
-
-type UbahPoli struct {
-	ID   int64  `db:"id"`
-	Nama string `db:"nama"`
 }
 
 type VerifikasiResponse struct {
