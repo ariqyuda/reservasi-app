@@ -2,8 +2,8 @@ package petugas
 
 import (
 	"errors"
-	"time"
 	"tugas-akhir/internal/repositories/model"
+	"tugas-akhir/internal/repositories/user"
 )
 
 func (prs *PetugasRepo) LihatReservasi() ([]model.Reservasi, error) {
@@ -49,7 +49,10 @@ func (prs *PetugasRepo) LihatReservasi() ([]model.Reservasi, error) {
 func (prs *PetugasRepo) VerifikasiReservasi(reservasi_id int64, status string) error {
 	var sqlStmt string = `UPDATE reservasi SET status = ?, updated_at = ? WHERE id = ?`
 
-	_, err := prs.db.Exec(sqlStmt, status, time.Now(), reservasi_id)
+	userRepo := user.NewUserRepositories(prs.db)
+	waktuLokal, _ := userRepo.SetLocalTime()
+
+	_, err := prs.db.Exec(sqlStmt, status, waktuLokal, reservasi_id)
 
 	if err != nil {
 		return err

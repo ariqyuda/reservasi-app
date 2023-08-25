@@ -5,17 +5,15 @@ import (
 	"tugas-akhir/internal/repositories/model"
 )
 
-func (p *PasienRepo) FetchJadwalDokterByPoli(slug string) ([]model.Jadwal, error) {
+func (p *PasienRepo) FetchJadwalDokterByDokterID(dokter_id int64) ([]model.Jadwal, error) {
 	var jadwal []model.Jadwal = make([]model.Jadwal, 0)
 
-	poliID, _ := p.FetchPoliIDBySlug(slug)
-
-	var sqlStmt string = `SELECT d.nama, j.jadwal_hari, j.jadwal_waktu
+	var sqlStmt string = `SELECT j.id, d.nama, j.jadwal_hari, j.jadwal_waktu
 		FROM dokter d
 		JOIN jadwal_dokter j ON d.id = j.dokter_id
-		WHERE d.poli_id = ?`
+		WHERE d.id = ?`
 
-	rows, err := p.db.Query(sqlStmt, poliID)
+	rows, err := p.db.Query(sqlStmt, dokter_id)
 	if err != nil {
 		return nil, errors.New("gagal menampilkan dokter")
 	}
@@ -25,6 +23,7 @@ func (p *PasienRepo) FetchJadwalDokterByPoli(slug string) ([]model.Jadwal, error
 	var dataJadwal model.Jadwal
 	for rows.Next() {
 		err := rows.Scan(
+			&dataJadwal.ID,
 			&dataJadwal.NamaDokter,
 			&dataJadwal.JadwalHari,
 			&dataJadwal.JadwalWaktu,

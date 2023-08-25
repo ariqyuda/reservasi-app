@@ -5,10 +5,10 @@ import (
 	"tugas-akhir/internal/repositories/model"
 )
 
-func (p *PasienRepo) FetchDokterByPoliNama(poli_nama string) ([]model.Dokter, error) {
+func (p *PasienRepo) FetchDokterByPoliNama(slug string) ([]model.Dokter, error) {
 	var dokter []model.Dokter = make([]model.Dokter, 0)
 
-	poliID, _ := p.FetchPoliIDByNama(poli_nama)
+	poliID, _ := p.FetchPoliIDBySlug(slug)
 
 	var sqlStmt string = `SELECT id, nama from DOKTER where poli_id = ?`
 

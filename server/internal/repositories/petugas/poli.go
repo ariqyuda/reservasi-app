@@ -3,8 +3,8 @@ package petugas
 import (
 	"errors"
 	"strings"
-	"time"
 	"tugas-akhir/internal/repositories/model"
+	"tugas-akhir/internal/repositories/user"
 )
 
 func (prs *PetugasRepo) FetchPoliByNama(nama string) (model.Poli, error) {
@@ -18,6 +18,19 @@ func (prs *PetugasRepo) FetchPoliByNama(nama string) (model.Poli, error) {
 	return poli, err
 }
 
+func (prs *PetugasRepo) SetSlugByName(nama string) (string, error) {
+	// membuat kata menjadi huruf kecil
+	words := strings.ToLower(nama)
+
+	// menghilangkan tanda koma
+	words = strings.Replace(words, ",", "", -1)
+
+	// menggantikan spasi dengan tanda strip
+	slug := strings.Replace(words, " ", "-", -1)
+
+	return slug, nil
+}
+
 func (prs *PetugasRepo) InsertPoli(nama string) error {
 
 	poli, _ := prs.FetchPoliByNama(nama)
@@ -25,13 +38,14 @@ func (prs *PetugasRepo) InsertPoli(nama string) error {
 		return errors.New("poli sudah terdaftar")
 	}
 
-	words := strings.ToLower(nama)
-	word := strings.Replace(words, ",", "", -1)
-	slug := strings.Replace(word, " ", "-", -1)
+	slug, _ := prs.SetSlugByName(nama)
 
 	sqlStmt := `INSERT INTO POLI (nama, slug, created_at) VALUES (?, ?, ?)`
 
-	_, err := prs.db.Exec(sqlStmt, nama, slug, time.Now())
+	userRepo := user.NewUserRepositories(prs.db)
+	waktuLokal, _ := userRepo.SetLocalTime()
+
+	_, err := prs.db.Exec(sqlStmt, nama, slug, waktuLokal)
 	if err != nil {
 		return err
 	}
@@ -41,13 +55,14 @@ func (prs *PetugasRepo) InsertPoli(nama string) error {
 
 func (prs *PetugasRepo) UbahPoli(poli_id int64, nama string) error {
 
-	words := strings.ToLower(nama)
-	word := strings.Replace(words, ",", "", -1)
-	slug := strings.Replace(word, " ", "-", -1)
+	slug, _ := prs.SetSlugByName(nama)
 
 	var sqlStmt string = `UPDATE poli SET nama = ?, slug = ?, updated_at = ? WHERE id = ?`
 
-	_, err := prs.db.Exec(sqlStmt, nama, slug, time.Now(), poli_id)
+	userRepo := user.NewUserRepositories(prs.db)
+	waktuLokal, _ := userRepo.SetLocalTime()
+
+	_, err := prs.db.Exec(sqlStmt, nama, slug, waktuLokal, poli_id)
 
 	if err != nil {
 		return err

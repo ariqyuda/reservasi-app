@@ -96,13 +96,40 @@ func (api *API) lihatPoli(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(fetchPoliResponse)
 }
 
-func (api *API) lihatJadwalDokter(w http.ResponseWriter, req *http.Request) {
+func (api *API) lihatDokter(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
 	poli := req.URL.Query().Get("poli")
 
-	reservasi, err := api.pasienRepo.FetchJadwalDokterByPoli(poli)
+	reservasi, err := api.pasienRepo.FetchDokterByPoliNama(poli)
 	encoder := json.NewEncoder(w)
+	w.Header().Set("Content-Type", "application/json")
+	defer func() {
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			encoder.Encode(ReservasiErrorResponse{Error: err.Error()})
+		}
+	}()
+	fetchJadwalResponse := PasienSuccessResponse{
+		Message: "success",
+		Data:    reservasi,
+	}
+
+	json.NewEncoder(w).Encode(fetchJadwalResponse)
+}
+
+func (api *API) lihatJadwalDokter(w http.ResponseWriter, req *http.Request) {
+	api.AllowOrigin(w, req)
+
+	var jadwalDokter JadwalDokter
+	err := json.NewDecoder(req.Body).Decode(&jadwalDokter)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	encoder := json.NewEncoder(w)
+	reservasi, err := api.pasienRepo.FetchJadwalDokterByDokterID(jadwalDokter.DokterID)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
 		if err != nil {

@@ -2,8 +2,8 @@ package pasien
 
 import (
 	"errors"
-	"time"
 	"tugas-akhir/internal/repositories/model"
+	"tugas-akhir/internal/repositories/user"
 )
 
 func (p *PasienRepo) ReservasiPribadi(user_id, jadwal_id int64, jadwal_tanggal string) error {
@@ -21,9 +21,12 @@ func (p *PasienRepo) ReservasiPribadi(user_id, jadwal_id int64, jadwal_tanggal s
 		tgl_lahir_pasien, tmpt_lahir_pasien, alamat_pasien, no_hp_pasien, jadwal_tanggal, jadwal_hari, jadwal_waktu, tipe, status, created_at)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
+	userRepo := user.NewUserRepositories(p.db)
+	waktuLokal, _ := userRepo.SetLocalTime()
+
 	_, err := p.db.Exec(sqlStmt, user_id, dokterID, poliID, pasien.NIK, pasien.Nama, pasien.Gender,
 		pasien.BornDate, pasien.BornPlace, pasien.Adress, pasien.PhoneNumber, jadwal_tanggal,
-		jadwal.JadwalHari, jadwal.JadwalWaktu, tipe, status, time.Now())
+		jadwal.JadwalHari, jadwal.JadwalWaktu, tipe, status, waktuLokal)
 
 	if err != nil {
 		return err
@@ -34,12 +37,6 @@ func (p *PasienRepo) ReservasiPribadi(user_id, jadwal_id int64, jadwal_tanggal s
 
 func (p *PasienRepo) FetchReservasiByUserID(user_id int64) ([]model.Reservasi, error) {
 	var reservasi []model.Reservasi = make([]model.Reservasi, 0)
-
-	// sqlStmt = `SELECT r.nik_pasien, r.nama, r.jk_pasien, r.tgl_lahir_pasien, r.tmpt_lahir_pasien,
-	// 	r.alamat_pasien, r.no_hp_pasien, d.nama, p.nama_poli, r.jadwal_hari, r.jadwal_waktu, r.tipe, r.status
-	// 	FROM reservasi r
-	// 	JOIN dokter d ON r.dokter_id = d.id
-	// 	JOIN poli p ON r.poli_id = p.id`
 
 	var sqlStmt string = `SELECT d.nama, p.nama, r.jadwal_tanggal, r.jadwal_hari, r.jadwal_waktu, r.tipe, r.status 
 		FROM reservasi r

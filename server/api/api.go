@@ -40,6 +40,7 @@ func NewAPI(usersRepo user.UserRepo, authRepo auth.AuthRepo, adminRepo admin.Adm
 
 	// API pasien with middleware
 	mux.Handle("/api/pasien/lihat/poli", api.GET(api.AuthMiddleWare(http.HandlerFunc(api.lihatPoli))))
+	mux.Handle("/api/pasien/lihat/poli/dokter", api.GET(api.AuthMiddleWare(http.HandlerFunc(api.lihatDokter))))
 	mux.Handle("/api/pasien/lihat/poli/dokter/jadwal", api.GET(api.AuthMiddleWare(http.HandlerFunc(api.lihatJadwalDokter))))
 	mux.Handle("/api/pasien/reservasi/pribadi", api.POST(api.AuthMiddleWare(http.HandlerFunc(api.reservasiPribadi))))
 	mux.Handle("/api/pasien/reservasi/riwayat", api.GET(api.AuthMiddleWare(http.HandlerFunc(api.lihatReservasi))))

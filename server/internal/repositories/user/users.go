@@ -106,7 +106,10 @@ func (u *UserRepo) FetchDataUserByRole(user_role string) ([]model.User, error) {
 }
 
 func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+
+	newFormatPassword := "%+%" + password + "%+%"
+
+	bytes, err := bcrypt.GenerateFromPassword([]byte(newFormatPassword), 14)
 	return string(bytes), err
 }
 
@@ -174,19 +177,30 @@ func (u *UserRepo) InsertUser(email, nama, role, password string) error {
 		return errors.New("password hanya boleh mengandung huruf dan angka saja")
 	}
 
-	newFormatPassword := "%+%" + password + "%+%"
-
 	// hash password
-	hashPassword, _ := HashPassword(newFormatPassword)
+	hashPassword, _ := HashPassword(password)
 
 	// insert to database
 	// query untuk insert user
 	var sqlStmt = `INSERT INTO USERS (email, nama, password, role, created_at) VALUES (?, ?, ?, ?, ?)`
 
-	_, err := u.db.Exec(sqlStmt, email, nama, hashPassword, role, time.Now())
+	// set waktu lokal
+	waktuLokal, _ := u.SetLocalTime()
+
+	_, err := u.db.Exec(sqlStmt, email, nama, hashPassword, role, waktuLokal)
 	if err != nil {
 		return err
 	}
 
 	return err
+}
+
+func (u *UserRepo) SetLocalTime() (string, error) {
+	// set lokasi
+	location, _ := time.LoadLocation("Asia/Jakarta")
+
+	// get waktu lokal
+	localTime := time.Now().In(location).Format("2006-01-02 15:04:05")
+
+	return localTime, nil
 }
