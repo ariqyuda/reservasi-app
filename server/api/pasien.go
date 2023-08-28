@@ -121,15 +121,10 @@ func (api *API) lihatDokter(w http.ResponseWriter, req *http.Request) {
 func (api *API) lihatJadwalDokter(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	var jadwalDokter JadwalDokter
-	err := json.NewDecoder(req.Body).Decode(&jadwalDokter)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	id_dokter := req.Context().Value("id").(int64)
 
+	reservasi, err := api.pasienRepo.FetchJadwalDokterByDokterID(id_dokter)
 	encoder := json.NewEncoder(w)
-	reservasi, err := api.pasienRepo.FetchJadwalDokterByDokterID(jadwalDokter.DokterID)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
 		if err != nil {

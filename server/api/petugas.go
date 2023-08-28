@@ -40,6 +40,11 @@ type VerifReservasi struct {
 	Status string `db:"status"`
 }
 
+type DataLaporan struct {
+	WaktuAwal  string `json:"waktu_awal"`
+	WaktuAkhir string `json:"waktu_akhir"`
+}
+
 type InsertPoliSuccessResponse struct {
 	Message string `json:"message"`
 	Data    Poli   `json:"data"`
@@ -206,6 +211,34 @@ func (api *API) verifikasiReservasi(w http.ResponseWriter, req *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(verifikasiResponse)
+}
+
+func (api *API) kirimDataLaporan(w http.ResponseWriter, req *http.Request) {
+	api.AllowOrigin(w, req)
+
+	var bodyRequest DataLaporan
+	err := json.NewDecoder(req.Body).Decode(&bodyRequest)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	encoder := json.NewEncoder(w)
+	reservasi, err := api.petugasRepo.KirimDataLaporan(bodyRequest.WaktuAwal, bodyRequest.WaktuAkhir)
+
+	w.Header().Set("Content-Type", "application/json")
+	defer func() {
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			encoder.Encode(ReservasiErrorResponse{Error: err.Error()})
+		}
+	}()
+	lihatReservasiResponse := ReservasiResponse{
+		Message: "success",
+		Data:    reservasi,
+	}
+
+	json.NewEncoder(w).Encode(lihatReservasiResponse)
 }
 
 func (api *API) ubahPoli(w http.ResponseWriter, req *http.Request) {
