@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 type Jadwal struct {
@@ -14,6 +15,12 @@ type Jadwal struct {
 
 type PasienSuccessResponse struct {
 	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
+}
+
+type FetchJadwalSuccessResponse struct {
+	Message string      `json:"message"`
+	Dokter  interface{} `json:"data_dokter"`
 	Data    interface{} `json:"data"`
 }
 
@@ -121,9 +128,11 @@ func (api *API) lihatDokter(w http.ResponseWriter, req *http.Request) {
 func (api *API) lihatJadwalDokter(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	id_dokter := req.Context().Value("id").(int64)
+	id := req.URL.Query().Get("id")
+	id_dokter, err := strconv.Atoi(id)
 
-	reservasi, err := api.pasienRepo.FetchJadwalDokterByDokterID(id_dokter)
+	dokter, err := api.pasienRepo.FetchDokterByID(int64(id_dokter))
+	reservasi, err := api.pasienRepo.FetchJadwalDokterByDokterID(int64(id_dokter))
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -132,8 +141,9 @@ func (api *API) lihatJadwalDokter(w http.ResponseWriter, req *http.Request) {
 			encoder.Encode(ReservasiErrorResponse{Error: err.Error()})
 		}
 	}()
-	fetchJadwalResponse := PasienSuccessResponse{
+	fetchJadwalResponse := FetchJadwalSuccessResponse{
 		Message: "success",
+		Dokter:  dokter,
 		Data:    reservasi,
 	}
 

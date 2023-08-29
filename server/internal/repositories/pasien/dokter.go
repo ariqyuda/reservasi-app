@@ -36,6 +36,21 @@ func (p *PasienRepo) FetchDokterByPoliNama(slug string) ([]model.Dokter, error) 
 	return dokter, nil
 }
 
+func (p *PasienRepo) FetchDokterByID(dokter_id int64) (model.Dokter, error) {
+	var dokter model.Dokter
+
+	var sqlStmt string = `SELECT id, nama, poli_id FROM dokter WHERE id = ?`
+
+	row := p.db.QueryRow(sqlStmt, dokter_id)
+	err := row.Scan(
+		&dokter.ID,
+		&dokter.Nama,
+		&dokter.PoliID,
+	)
+
+	return dokter, err
+}
+
 func (p *PasienRepo) FetchDokterIDByJadwalID(jadwal_id int64) (int64, error) {
 	var id int64
 
