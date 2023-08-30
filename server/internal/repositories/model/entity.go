@@ -29,11 +29,13 @@ type Pasien struct {
 type Dokter struct {
 	ID        int64     `db:"id"`
 	UserID    int64     `db:"user_id"`
+	Email     string    `db:"email"`
 	Nama      string    `db:"nama_dokter"`
 	Role      string    `json:"role"`
 	Hari      string    `json:"jadwal_hari"`
 	Waktu     string    `json:"jadwal_waktu"`
 	PoliID    int64     `db:"poli_id"`
+	PoliName  string    `db:"nama_poli"`
 	CreatedAt time.Time `db:"created_at"`
 }
 

@@ -75,6 +75,40 @@ func (u *UserRepo) FetchPasienID(user_id int64) (*int64, error) {
 	return &id, err
 }
 
+func (u *UserRepo) FetchDataDokter() ([]model.Dokter, error) {
+	var user []model.Dokter = make([]model.Dokter, 0)
+
+	var sqlStmt string = `SELECT u.id, u.email, u.nama, p.nama
+	FROM users u
+	JOIN dokter d ON u.id = d.user_id
+	JOIN poli p ON d.poli_id = p.id`
+
+	rows, err := u.db.Query(sqlStmt)
+	if err != nil {
+		return nil, errors.New("gagal menampilkan data user")
+	}
+
+	defer rows.Close()
+
+	var dataDokter model.Dokter
+	for rows.Next() {
+		err := rows.Scan(
+			&dataDokter.UserID,
+			&dataDokter.Email,
+			&dataDokter.Nama,
+			&dataDokter.PoliName,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		user = append(user, dataDokter)
+	}
+
+	return user, nil
+}
+
 func (u *UserRepo) FetchDataUserByRole(user_role string) ([]model.User, error) {
 	var user []model.User = make([]model.User, 0)
 

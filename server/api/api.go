@@ -61,6 +61,7 @@ func NewAPI(usersRepo user.UserRepo, authRepo auth.AuthRepo, adminRepo admin.Adm
 
 	// API admin with middleware
 	mux.Handle("/api/admin/lihat/data/user", api.GET(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.lihatDataUser)))))
+	mux.Handle("/api/admin/lihat/data/dokter", api.GET(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.lihatDataDokter)))))
 	mux.Handle("/api/admin/insert/petugas", api.POST(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.insertPetugas)))))
 
 	return api

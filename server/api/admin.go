@@ -51,6 +51,26 @@ func (api *API) lihatDataUser(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(fetchUserResponse)
 }
 
+func (api *API) lihatDataDokter(w http.ResponseWriter, req *http.Request) {
+	api.AllowOrigin(w, req)
+
+	dokterData, err := api.usersRepo.FetchDataDokter()
+	encoder := json.NewEncoder(w)
+	w.Header().Set("Content-Type", "application/json")
+	defer func() {
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			encoder.Encode(ReservasiErrorResponse{Error: err.Error()})
+		}
+	}()
+	fetchUserResponse := FetchUserSuccessResponse{
+		Message: "success",
+		Data:    dokterData,
+	}
+
+	json.NewEncoder(w).Encode(fetchUserResponse)
+}
+
 func (api *API) insertPetugas(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
