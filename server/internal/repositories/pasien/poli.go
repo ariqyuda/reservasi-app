@@ -9,7 +9,7 @@ func (p *PasienRepo) FetchPoliIDByNama(nama string) (*int64, error) {
 	var sqlStmt string
 	var id int64
 
-	sqlStmt = `SELECT id FROM poli WHERE slug = ?`
+	sqlStmt = `SELECT id FROM poli WHERE nama = ?`
 
 	row := p.db.QueryRow(sqlStmt, nama)
 	err := row.Scan(&id)
