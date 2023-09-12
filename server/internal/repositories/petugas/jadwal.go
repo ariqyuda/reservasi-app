@@ -26,10 +26,9 @@ func (prs *PetugasRepo) InsertJadwal(id_dokter int64, jadwal_hari, jadwal_mulai,
 func (prs *PetugasRepo) FetchJadwalDokter() ([]model.Jadwal, error) {
 	var jadwal []model.Jadwal = make([]model.Jadwal, 0)
 
-	var sqlStmt string = `SELECT j.id, j.jadwal_hari, j.jadwal_waktu
+	var sqlStmt string = `SELECT j.id, d.nama, j.jadwal_hari, j.jadwal_waktu
 		FROM dokter d
-		JOIN jadwal_dokter j ON d.id = j.dokter_id
-		WHERE d.id = ?`
+		JOIN jadwal_dokter j ON d.id = j.dokter_id`
 
 	rows, err := prs.db.Query(sqlStmt)
 	if err != nil {
