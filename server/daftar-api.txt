@@ -29,6 +29,7 @@ petugas:
 - insert poli
 - ubah jadwal dokter
 - edit poli
+- lihat jadwal petugas
 
 ===============================
 
@@ -43,4 +44,5 @@ dokter:
 
 petugas: 
 - kirim data laporan
+
 
