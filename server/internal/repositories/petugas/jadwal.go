@@ -41,6 +41,7 @@ func (prs *PetugasRepo) FetchJadwalDokter() ([]model.Jadwal, error) {
 	for rows.Next() {
 		err := rows.Scan(
 			&dataJadwal.ID,
+			&dataJadwal.NamaDokter,
 			&dataJadwal.JadwalHari,
 			&dataJadwal.JadwalWaktu,
 		)
