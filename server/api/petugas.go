@@ -168,6 +168,26 @@ func (api *API) insertJadwalDokter(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(insertJadwalDokterResponse)
 }
 
+func (api *API) fetchJadwalDokter(w http.ResponseWriter, req *http.Request) {
+	api.AllowOrigin(w, req)
+
+	reservasi, err := api.petugasRepo.FetchJadwalDokter()
+	encoder := json.NewEncoder(w)
+	w.Header().Set("Content-Type", "application/json")
+	defer func() {
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			encoder.Encode(ReservasiErrorResponse{Error: err.Error()})
+		}
+	}()
+	fetchJadwalResponse := FetchJadwalSuccessResponse{
+		Message: "success",
+		Data:    reservasi,
+	}
+
+	json.NewEncoder(w).Encode(fetchJadwalResponse)
+}
+
 func (api *API) lihatReservasiUser(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
