@@ -38,7 +38,7 @@ func (p *PasienRepo) ReservasiPribadi(user_id, jadwal_id int64, jadwal_tanggal s
 func (p *PasienRepo) FetchReservasiByUserID(user_id int64) ([]model.Reservasi, error) {
 	var reservasi []model.Reservasi = make([]model.Reservasi, 0)
 
-	var sqlStmt string = `SELECT d.nama, p.nama, r.jadwal_tanggal, r.jadwal_hari, r.jadwal_waktu, r.tipe, r.status 
+	var sqlStmt string = `SELECT d.nama, p.nama, r.nama, r.jadwal_tanggal, r.jadwal_hari, r.jadwal_waktu, r.tipe, r.status 
 		FROM reservasi r
 		JOIN dokter d ON r.dokter_id = d.id
 		JOIN poli p ON r.poli_id = p.id
@@ -56,6 +56,7 @@ func (p *PasienRepo) FetchReservasiByUserID(user_id int64) ([]model.Reservasi, e
 		err := rows.Scan(
 			&dataReservasi.DokterName,
 			&dataReservasi.PoliName,
+			&dataReservasi.PasienName,
 			&dataReservasi.Tanggal,
 			&dataReservasi.Hari,
 			&dataReservasi.Waktu,
