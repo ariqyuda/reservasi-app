@@ -10,7 +10,10 @@ func (p *PasienRepo) FetchDokterByPoliNama(slug string) ([]model.Dokter, error) 
 
 	poliID, _ := p.FetchPoliIDBySlug(slug)
 
-	var sqlStmt string = `SELECT id, nama from DOKTER where poli_id = ?`
+	var sqlStmt string = `SELECT d.id, d.nama, p.nama 
+	from dokter d
+	JOIN poli P ON d.poli_id = p.id 
+	where poli_id = ?`
 
 	rows, err := p.db.Query(sqlStmt, poliID)
 	if err != nil {
@@ -24,6 +27,7 @@ func (p *PasienRepo) FetchDokterByPoliNama(slug string) ([]model.Dokter, error) 
 		err := rows.Scan(
 			&dataDokter.ID,
 			&dataDokter.Nama,
+			&dataDokter.PoliName,
 		)
 
 		if err != nil {
