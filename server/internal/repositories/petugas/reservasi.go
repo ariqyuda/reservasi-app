@@ -14,7 +14,9 @@ func (prs *PetugasRepo) LihatReservasi() ([]model.Reservasi, error) {
 		FROM reservasi r
 		JOIN dokter d ON r.dokter_id = d.id
 		JOIN poli p ON r.poli_id = p.id
-		JOIN pasien ps ON r.user_id = ps.user_id`
+		JOIN pasien ps ON r.user_id = ps.user_id
+		WHERE NOT r.status = 'Selesai'
+		ORDER BY r.created_at DESC`
 
 	rows, err := prs.db.Query(sqlStmt)
 	if err != nil {
