@@ -39,7 +39,6 @@ all user:
 - ubah password
 
 pasien: 
-- riwayat tamppilkan data paling baru
 
 dokter:
 

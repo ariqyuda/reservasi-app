@@ -42,7 +42,8 @@ func (p *PasienRepo) FetchReservasiByUserID(user_id int64) ([]model.Reservasi, e
 		FROM reservasi r
 		JOIN dokter d ON r.dokter_id = d.id
 		JOIN poli p ON r.poli_id = p.id
-		WHERE r.user_id = ?`
+		WHERE r.user_id = ?
+		ORDER BY r.created_at DESC`
 
 	rows, err := p.db.Query(sqlStmt, user_id)
 	if err != nil {
