@@ -69,3 +69,14 @@ func (p *PasienRepo) FetchPoliIDByDokterID(dokter_id int64) (*int64, error) {
 
 	return &id, err
 }
+
+func (p *PasienRepo) FetchPoliNameBySlug(slug string) (string, error) {
+	var poliName string
+
+	var sqlStmt string = `SELECT nama FROM poli WHERE slug = ?`
+
+	row := p.db.QueryRow(sqlStmt, slug)
+	err := row.Scan(&poliName)
+
+	return poliName, err
+}

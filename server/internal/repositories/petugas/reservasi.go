@@ -3,6 +3,7 @@ package petugas
 import (
 	"errors"
 	"tugas-akhir/internal/repositories/model"
+	"tugas-akhir/internal/repositories/pasien"
 	"tugas-akhir/internal/repositories/user"
 )
 
@@ -56,6 +57,37 @@ func (prs *PetugasRepo) VerifikasiReservasi(reservasi_id int64, status string) e
 	waktuLokal, _ := userRepo.SetLocalTime()
 
 	_, err := prs.db.Exec(sqlStmt, status, waktuLokal, reservasi_id)
+
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (prs *PetugasRepo) ReservasiPasien(user_id, jadwal_id int64, jadwal_tanggal, nik_pasien, nama_pasien, jk_pasien,
+	tgl_lahir_pasien, tmpt_lahir_pasien, alamat_pasien, no_hp_pasien string) error {
+
+	var jadwal model.Jadwal
+
+	pasienRepo := pasien.NewPasienRepositories(prs.db)
+
+	jadwal, _ = pasienRepo.FetchJadwalByID(jadwal_id)
+	dokterID, _ := pasienRepo.FetchDokterIDByJadwalID(jadwal_id)
+	poliID, _ := pasienRepo.FetchPoliIDByDokterID(dokterID)
+	tipe := "umum"
+	status := "menunggu persetujuan"
+
+	var sqlStmt string = `INSERT INTO reservasi (user_id, dokter_id, poli_id, nik_pasien, nama, jk_pasien,
+		tgl_lahir_pasien, tmpt_lahir_pasien, alamat_pasien, no_hp_pasien, jadwal_tanggal, jadwal_hari, jadwal_waktu, tipe, status, created_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+
+	userRepo := user.NewUserRepositories(prs.db)
+	waktuLokal, _ := userRepo.SetLocalTime()
+
+	_, err := prs.db.Exec(sqlStmt, user_id, dokterID, poliID, nik_pasien, nama_pasien, jk_pasien,
+		tgl_lahir_pasien, tmpt_lahir_pasien, alamat_pasien, no_hp_pasien, jadwal_tanggal,
+		jadwal.JadwalHari, jadwal.JadwalWaktu, tipe, status, waktuLokal)
 
 	if err != nil {
 		return err

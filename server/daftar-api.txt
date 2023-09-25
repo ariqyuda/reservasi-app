@@ -43,8 +43,6 @@ pasien:
 dokter:
 
 petugas: 
-- kirim data laporan
-- jadwal dokter di group
 
 
 

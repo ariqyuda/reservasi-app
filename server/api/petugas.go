@@ -45,6 +45,18 @@ type DataLaporan struct {
 	WaktuAkhir string `json:"waktu_akhir"`
 }
 
+type ReservasiPasien struct {
+	ID             int64  `db:"id"`
+	Jadwal_Tanggal string `db:"jadwal_tanggal"`
+	Nama           string `json:"nama_pasien"`
+	NIK            string `json:"nik_pasien"`
+	Gender         string `json:"jk_pasien"`
+	BornDate       string `json:"tgl_lahir_pasien"`
+	BornPlace      string `json:"tmpt_lahir_pasien"`
+	Adress         string `json:"alamat_pasien"`
+	PhoneNumber    string `json:"no_hp_pasien"`
+}
+
 type InsertPoliSuccessResponse struct {
 	Message string `json:"message"`
 	Data    Poli   `json:"data"`
@@ -309,4 +321,33 @@ func (api *API) ubahJadwalDokter(w http.ResponseWriter, req *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(ubahJadwalResponse)
+}
+
+func (api *API) reservasiPasien(w http.ResponseWriter, req *http.Request) {
+	api.AllowOrigin(w, req)
+
+	userID := req.Context().Value("id").(int64)
+
+	var reservasi ReservasiPasien
+	err := json.NewDecoder(req.Body).Decode(&reservasi)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	encoder := json.NewEncoder(w)
+	err = api.petugasRepo.ReservasiPasien(int64(userID), reservasi.ID, reservasi.Jadwal_Tanggal, reservasi.NIK, reservasi.Nama, reservasi.Gender,
+		reservasi.BornDate, reservasi.BornPlace, reservasi.Adress, reservasi.PhoneNumber)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		encoder.Encode(AuthErrorResponse{Error: err.Error()})
+		return
+	}
+
+	reservasiResponse := PasienSuccessResponse{
+		Message: "reservasi berhasil",
+		Data:    reservasi,
+	}
+
+	json.NewEncoder(w).Encode(reservasiResponse)
 }

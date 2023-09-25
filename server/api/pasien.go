@@ -18,6 +18,12 @@ type PasienSuccessResponse struct {
 	Data    interface{} `json:"data"`
 }
 
+type FethcDokterResponse struct {
+	Message string      `json:"message"`
+	Poli    string      `json:"poli"`
+	Data    interface{} `json:"data"`
+}
+
 type FetchJadwalSuccessResponse struct {
 	Message string      `json:"message"`
 	Dokter  interface{} `json:"data_dokter"`
@@ -109,6 +115,7 @@ func (api *API) lihatDokter(w http.ResponseWriter, req *http.Request) {
 	poli := req.URL.Query().Get("poli")
 
 	reservasi, err := api.pasienRepo.FetchDokterByPoliNama(poli)
+	poliName, err := api.pasienRepo.FetchPoliNameBySlug(poli)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -117,8 +124,9 @@ func (api *API) lihatDokter(w http.ResponseWriter, req *http.Request) {
 			encoder.Encode(ReservasiErrorResponse{Error: err.Error()})
 		}
 	}()
-	fetchJadwalResponse := PasienSuccessResponse{
+	fetchJadwalResponse := FethcDokterResponse{
 		Message: "success",
+		Poli:    poliName,
 		Data:    reservasi,
 	}
 
