@@ -57,6 +57,31 @@ func (prs *PetugasRepo) FetchJadwalDokter() ([]model.Jadwal, error) {
 	return jadwal, nil
 }
 
+func (prs *PetugasRepo) FetchJadwalDokterByID(dokter_id int64) (model.Jadwal, error) {
+	var jadwal model.Jadwal
+
+	var sqlStmt string = `SELECT j.id, d.id, d.nama, j.jadwal_hari, j.jadwal_waktu
+		FROM dokter d
+		JOIN jadwal_dokter j ON d.id = j.dokter_id
+		WHERE d.id = ?`
+
+	row := prs.db.QueryRow(sqlStmt, dokter_id)
+
+	err := row.Scan(
+		&jadwal.ID,
+		&jadwal.Dokter_ID,
+		&jadwal.NamaDokter,
+		&jadwal.JadwalHari,
+		&jadwal.JadwalWaktu,
+	)
+
+	if err != nil {
+		return jadwal, err
+	}
+
+	return jadwal, nil
+}
+
 func (prs *PetugasRepo) UbahJadwalDokter(reservasi_id int64, jadwal_hari, jadwal_mulai, jadwal_berakhir string) error {
 
 	jadwal_waktu := jadwal_mulai + " - " + jadwal_berakhir
