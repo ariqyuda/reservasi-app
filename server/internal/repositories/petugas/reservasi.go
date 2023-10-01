@@ -11,11 +11,11 @@ func (prs *PetugasRepo) LihatReservasi() ([]model.Reservasi, error) {
 	// var sqlStmt string
 	var reservasi []model.Reservasi = make([]model.Reservasi, 0)
 
-	var sqlStmt string = `SELECT r.id, d.nama as nama_dokter, p.nama AS poli, ps.nama AS nama_pasien, r.jadwal_tanggal, r.jadwal_hari, r.jadwal_waktu, r.tipe, r.status 
+	var sqlStmt string = `SELECT r.id, d.nama as nama_dokter, p.nama AS poli, r.nama AS nama_pasien, r.jadwal_tanggal, r.jadwal_hari, r.jadwal_waktu, r.tipe, r.status 
 		FROM reservasi r
 		JOIN dokter d ON r.dokter_id = d.id
 		JOIN poli p ON r.poli_id = p.id
-		JOIN pasien ps ON r.user_id = ps.user_id
+		LEFT JOIN pasien ps ON r.user_id = ps.user_id
 		WHERE NOT r.status = 'Selesai'
 		ORDER BY r.created_at DESC`
 
