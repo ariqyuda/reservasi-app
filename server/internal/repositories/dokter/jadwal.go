@@ -17,7 +17,7 @@ func NewDokterRepositories(db *sql.DB) *DokterRepo {
 func (d *DokterRepo) LihatJadwal(user_id int64) ([]model.Reservasi, error) {
 	var reservasi []model.Reservasi = make([]model.Reservasi, 0)
 
-	var sqlStmt string = `SELECT p.nama, r.jadwal_tanggal, r.jadwal_hari, r.jadwal_waktu
+	var sqlStmt string = `SELECT p.nama, r.jadwal_tanggal, r.jadwal_hari, r.jadwal_waktu, r.keluhan
 	FROM reservasi r
 	JOIN dokter d ON r.dokter_id = d.id
 	JOIN pasien p ON r.user_id = p.user_id
@@ -37,6 +37,7 @@ func (d *DokterRepo) LihatJadwal(user_id int64) ([]model.Reservasi, error) {
 			&dataReservasi.Tanggal,
 			&dataReservasi.Hari,
 			&dataReservasi.Waktu,
+			&dataReservasi.Keluhan,
 		)
 
 		if err != nil {

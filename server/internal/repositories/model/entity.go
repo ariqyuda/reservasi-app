@@ -70,5 +70,6 @@ type Reservasi struct {
 	Waktu       string    `json:"jadwal_waktu"`
 	Tipe        string    `db:"tipe"`
 	Status      string    `db:"status"`
+	Keluhan     string    `db:"keluhan"`
 	CreatedAt   time.Time `db:"created_at"`
 }
