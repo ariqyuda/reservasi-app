@@ -163,15 +163,15 @@ func (api *API) reservasiPribadi(w http.ResponseWriter, req *http.Request) {
 
 	userID := req.Context().Value("id").(int64)
 
-	var jadwal Jadwal
-	err := json.NewDecoder(req.Body).Decode(&jadwal)
+	var reservasi ReservasiPasien
+	err := json.NewDecoder(req.Body).Decode(&reservasi)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.pasienRepo.ReservasiPribadi(int64(userID), jadwal.ID, jadwal.Jadwal_Tanggal)
+	err = api.pasienRepo.ReservasiPribadi(int64(userID), reservasi.ID, reservasi.Jadwal_Tanggal, reservasi.Keluhan)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
@@ -180,7 +180,7 @@ func (api *API) reservasiPribadi(w http.ResponseWriter, req *http.Request) {
 
 	reservasiResponse := PasienSuccessResponse{
 		Message: "reservasi berhasil",
-		Data:    jadwal,
+		Data:    reservasi,
 	}
 
 	json.NewEncoder(w).Encode(reservasiResponse)

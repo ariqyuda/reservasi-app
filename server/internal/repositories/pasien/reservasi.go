@@ -6,7 +6,7 @@ import (
 	"tugas-akhir/internal/repositories/user"
 )
 
-func (p *PasienRepo) ReservasiPribadi(user_id, jadwal_id int64, jadwal_tanggal string) error {
+func (p *PasienRepo) ReservasiPribadi(user_id, jadwal_id int64, jadwal_tanggal, keluhan string) error {
 	var jadwal model.Jadwal
 	var pasien model.Pasien
 
@@ -18,15 +18,15 @@ func (p *PasienRepo) ReservasiPribadi(user_id, jadwal_id int64, jadwal_tanggal s
 	status := "menunggu persetujuan"
 
 	var sqlStmt string = `INSERT INTO reservasi (user_id, dokter_id, poli_id, nik_pasien, nama, jk_pasien,
-		tgl_lahir_pasien, tmpt_lahir_pasien, alamat_pasien, no_hp_pasien, jadwal_tanggal, jadwal_hari, jadwal_waktu, tipe, status, created_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		tgl_lahir_pasien, tmpt_lahir_pasien, alamat_pasien, no_hp_pasien, jadwal_tanggal, jadwal_hari, jadwal_waktu, tipe, status, keluhan, created_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	userRepo := user.NewUserRepositories(p.db)
 	waktuLokal, _ := userRepo.SetLocalTime()
 
 	_, err := p.db.Exec(sqlStmt, user_id, dokterID, poliID, pasien.NIK, pasien.Nama, pasien.Gender,
 		pasien.BornDate, pasien.BornPlace, pasien.Adress, pasien.PhoneNumber, jadwal_tanggal,
-		jadwal.JadwalHari, jadwal.JadwalWaktu, tipe, status, waktuLokal)
+		jadwal.JadwalHari, jadwal.JadwalWaktu, tipe, status, keluhan, waktuLokal)
 
 	if err != nil {
 		return err

@@ -66,7 +66,7 @@ func (prs *PetugasRepo) VerifikasiReservasi(reservasi_id int64, status string) e
 }
 
 func (prs *PetugasRepo) ReservasiPasien(user_id, jadwal_id int64, jadwal_tanggal, nik_pasien, nama_pasien, jk_pasien,
-	tgl_lahir_pasien, tmpt_lahir_pasien, alamat_pasien, no_hp_pasien string) error {
+	tgl_lahir_pasien, tmpt_lahir_pasien, alamat_pasien, no_hp_pasien, keluhan string) error {
 
 	var jadwal model.Jadwal
 
@@ -79,15 +79,15 @@ func (prs *PetugasRepo) ReservasiPasien(user_id, jadwal_id int64, jadwal_tanggal
 	status := "menunggu persetujuan"
 
 	var sqlStmt string = `INSERT INTO reservasi (user_id, dokter_id, poli_id, nik_pasien, nama, jk_pasien,
-		tgl_lahir_pasien, tmpt_lahir_pasien, alamat_pasien, no_hp_pasien, jadwal_tanggal, jadwal_hari, jadwal_waktu, tipe, status, created_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		tgl_lahir_pasien, tmpt_lahir_pasien, alamat_pasien, no_hp_pasien, jadwal_tanggal, jadwal_hari, jadwal_waktu, tipe, status, keluhan, created_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	userRepo := user.NewUserRepositories(prs.db)
 	waktuLokal, _ := userRepo.SetLocalTime()
 
 	_, err := prs.db.Exec(sqlStmt, user_id, dokterID, poliID, nik_pasien, nama_pasien, jk_pasien,
 		tgl_lahir_pasien, tmpt_lahir_pasien, alamat_pasien, no_hp_pasien, jadwal_tanggal,
-		jadwal.JadwalHari, jadwal.JadwalWaktu, tipe, status, waktuLokal)
+		jadwal.JadwalHari, jadwal.JadwalWaktu, tipe, status, keluhan, waktuLokal)
 
 	if err != nil {
 		return err

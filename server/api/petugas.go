@@ -55,6 +55,7 @@ type ReservasiPasien struct {
 	BornPlace      string `json:"tmpt_lahir_pasien"`
 	Adress         string `json:"alamat_pasien"`
 	PhoneNumber    string `json:"no_hp_pasien"`
+	Keluhan        string `json:"keluhan"`
 }
 
 type InsertPoliSuccessResponse struct {
@@ -337,7 +338,7 @@ func (api *API) reservasiPasien(w http.ResponseWriter, req *http.Request) {
 
 	encoder := json.NewEncoder(w)
 	err = api.petugasRepo.ReservasiPasien(int64(userID), reservasi.ID, reservasi.Jadwal_Tanggal, reservasi.NIK, reservasi.Nama, reservasi.Gender,
-		reservasi.BornDate, reservasi.BornPlace, reservasi.Adress, reservasi.PhoneNumber)
+		reservasi.BornDate, reservasi.BornPlace, reservasi.Adress, reservasi.PhoneNumber, reservasi.Keluhan)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
