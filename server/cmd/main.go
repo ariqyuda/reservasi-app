@@ -3,12 +3,7 @@ package main
 import (
 	"database/sql"
 	"tugas-akhir/api"
-	"tugas-akhir/internal/repositories/admin"
-	"tugas-akhir/internal/repositories/auth"
-	"tugas-akhir/internal/repositories/dokter"
-	"tugas-akhir/internal/repositories/pasien"
-	"tugas-akhir/internal/repositories/petugas"
-	"tugas-akhir/internal/repositories/user"
+	"tugas-akhir/internal/repositories"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -19,13 +14,17 @@ func main() {
 		panic(err)
 	}
 
-	usersRepo := user.NewUserRepositories(db)
-	authRepo := auth.NewAuthRepositories(db)
-	adminRepo := admin.NewAdminRepositories(db)
-	pasienRepo := pasien.NewPasienRepositories(db)
-	petugasRepo := petugas.NewPetugasRepositories(db)
-	dokterRepo := dokter.NewDokterRepositories(db)
+	usersRepo := repositories.NewUserRepositories(db)
+	authRepo := repositories.NewAuthRepositories(db)
+	dokterRepo := repositories.NewDokterRepositories(db)
+	pasienRepo := repositories.NewPasienRepositories(db)
+	petugasRepo := repositories.NewPetugasRepositories(db)
+	timeRepo := repositories.NewTimeRepositories(db)
+	jadwalRepo := repositories.NewJadwalRepositories(db)
+	poliRepo := repositories.NewPoliRepositories(db)
+	reservasiRepo := repositories.NewReservasiRepositories(db)
+	laporanRepo := repositories.NewLaporanRepositories(db)
 
-	mainAPI := api.NewAPI(*usersRepo, *authRepo, *adminRepo, *pasienRepo, *petugasRepo, *dokterRepo)
+	mainAPI := api.NewAPI(*usersRepo, *authRepo, *dokterRepo, *pasienRepo, *petugasRepo, *timeRepo, *jadwalRepo, *poliRepo, *reservasiRepo, *laporanRepo)
 	mainAPI.Start()
 }

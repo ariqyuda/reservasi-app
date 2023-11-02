@@ -1,11 +1,20 @@
-package petugas
+package repositories
 
 import (
+	"database/sql"
 	"errors"
-	"tugas-akhir/internal/repositories/model"
+	"tugas-akhir/internal/model"
 )
 
-func (prs *PetugasRepo) KirimDataLaporan(tanggal_awal, tanggal_akhir string) ([]model.Reservasi, error) {
+type LaporanRepo struct {
+	db *sql.DB
+}
+
+func NewLaporanRepositories(db *sql.DB) *LaporanRepo {
+	return &LaporanRepo{db: db}
+}
+
+func (l *LaporanRepo) KirimDataLaporan(tanggal_awal, tanggal_akhir string) ([]model.Reservasi, error) {
 	var reservasi []model.Reservasi = make([]model.Reservasi, 0)
 
 	var status string = "Selesai"
@@ -20,7 +29,7 @@ func (prs *PetugasRepo) KirimDataLaporan(tanggal_awal, tanggal_akhir string) ([]
 	AND 
 	jadwal_tanggal BETWEEN ? AND ?`
 
-	rows, err := prs.db.Query(sqlStmt, status, tanggal_awal, tanggal_akhir)
+	rows, err := l.db.Query(sqlStmt, status, tanggal_awal, tanggal_akhir)
 	if err != nil {
 		return nil, errors.New("gagal menampilkan data reservasi")
 	}

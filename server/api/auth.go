@@ -28,6 +28,11 @@ type Pasien struct {
 	KTP         string `json:"ktp_pasien"`
 }
 
+type Password struct {
+	PasswordBaru string `json:"password_baru"`
+	PasswordLama string `json:"password_lama"`
+}
+
 type RegisterSuccessResponse struct {
 	Message string `json:"message"`
 	Data    Pasien `json:"data_pasien"`
@@ -41,6 +46,10 @@ type LoginSuccessResponse struct {
 
 type AuthErrorResponse struct {
 	Error string `json:"error"`
+}
+
+type PasswordResponse struct {
+	Message string `json:"message"`
 }
 
 // Jwt key untuk membuat signature
@@ -174,4 +183,58 @@ func (api *API) logout(w http.ResponseWriter, req *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("logged out"))
+}
+
+func (api *API) ubahPassword(w http.ResponseWriter, req *http.Request) {
+	api.AllowOrigin(w, req)
+
+	userID := req.Context().Value("id").(int64)
+
+	var password Password
+	err := json.NewDecoder(req.Body).Decode(&password)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	encoder := json.NewEncoder(w)
+	err = api.authRepo.UbahPassword(userID, password.PasswordLama, password.PasswordBaru)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		encoder.Encode(AuthErrorResponse{Error: err.Error()})
+		return
+	}
+
+	authResponse := PasswordResponse{
+		Message: "Berhasil mengganti password",
+	}
+
+	json.NewEncoder(w).Encode(authResponse)
+}
+
+func (api *API) resetPassword(w http.ResponseWriter, req *http.Request) {
+	api.AllowOrigin(w, req)
+
+	userID := req.Context().Value("id").(int64)
+
+	var password Password
+	err := json.NewDecoder(req.Body).Decode(&password)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	encoder := json.NewEncoder(w)
+	err = api.authRepo.ResetPassword(userID, password.PasswordBaru)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		encoder.Encode(AuthErrorResponse{Error: err.Error()})
+		return
+	}
+
+	authResponse := PasswordResponse{
+		Message: "Berhasil mengganti password",
+	}
+
+	json.NewEncoder(w).Encode(authResponse)
 }

@@ -7,8 +7,8 @@ import (
 )
 
 type Jadwal struct {
-	ID             int64  `db:"id"`
-	Jadwal_Tanggal string `db:"jadwal_tanggal"`
+	ID             int64  `json:"id"`
+	Jadwal_Tanggal string `json:"jadwal_tanggal"`
 	Jadwal_Hari    string `json:"jadwal_hari"`
 	Jadwal_Waktu   string `json:"jadwal_waktu"`
 }
@@ -92,7 +92,7 @@ func (api *API) ubahDataDiri(w http.ResponseWriter, req *http.Request) {
 func (api *API) lihatPoli(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	poli, err := api.pasienRepo.FetchPoli()
+	poli, err := api.poliRepo.FetchPoli()
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -114,8 +114,8 @@ func (api *API) lihatDokter(w http.ResponseWriter, req *http.Request) {
 
 	poli := req.URL.Query().Get("poli")
 
-	reservasi, err := api.pasienRepo.FetchDokterByPoliNama(poli)
-	poliName, err := api.pasienRepo.FetchPoliNameBySlug(poli)
+	reservasi, err := api.dokterRepo.FetchDokterByPoliNama(poli)
+	poliName, err := api.poliRepo.FetchPoliNameBySlug(poli)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -139,8 +139,8 @@ func (api *API) lihatJadwalDokter(w http.ResponseWriter, req *http.Request) {
 	id := req.URL.Query().Get("id")
 	id_dokter, err := strconv.Atoi(id)
 
-	dokter, err := api.pasienRepo.FetchDokterByID(int64(id_dokter))
-	reservasi, err := api.pasienRepo.FetchJadwalDokterByDokterID(int64(id_dokter))
+	dokter, err := api.dokterRepo.FetchDokterByID(int64(id_dokter))
+	reservasi, err := api.jadwalRepo.FetchJadwalDokterByDokterID(int64(id_dokter))
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -171,7 +171,7 @@ func (api *API) reservasiPribadi(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.pasienRepo.ReservasiPribadi(int64(userID), reservasi.ID, reservasi.Jadwal_Tanggal, reservasi.Keluhan)
+	err = api.reservasiRepo.ReservasiPribadi(int64(userID), reservasi.JadwalID, reservasi.Jadwal_Tanggal, reservasi.Keluhan)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})

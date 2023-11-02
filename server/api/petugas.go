@@ -10,10 +10,13 @@ type Poli struct {
 }
 
 type Dokter struct {
-	Email    string `json:"email"`
-	Name     string `json:"nama"`
-	Password string `json:"password"`
-	Poli     string `json:"nama_poli"`
+	Email     string `json:"email"`
+	Name      string `json:"nama"`
+	Password  string `json:"password"`
+	Poli      string `json:"nama_poli"`
+	STRDokter string `json:"str_dokter"`
+	SIPDokter string `json:"sip_dokter"`
+	Status    string `json:"status"`
 }
 
 type JadwalDokter struct {
@@ -36,8 +39,13 @@ type UbahJadwalDokter struct {
 }
 
 type VerifReservasi struct {
-	ID     int64  `db:"id"`
-	Status string `db:"status"`
+	ID     int64  `json:"id"`
+	Status string `json:"status"`
+}
+
+type StatusDokter struct {
+	DokterID int64  `json:"id_dokter"`
+	Status   string `json:"status"`
 }
 
 type DataLaporan struct {
@@ -46,8 +54,8 @@ type DataLaporan struct {
 }
 
 type ReservasiPasien struct {
-	ID             int64  `db:"id"`
-	Jadwal_Tanggal string `db:"jadwal_tanggal"`
+	JadwalID       int64  `json:"id_jadwal"`
+	Jadwal_Tanggal string `json:"jadwal_tanggal"`
 	Nama           string `json:"nama_pasien"`
 	NIK            string `json:"nik_pasien"`
 	Gender         string `json:"jk_pasien"`
@@ -97,7 +105,7 @@ func (api *API) insertPoli(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.petugasRepo.InsertPoli(poli.Name)
+	err = api.poliRepo.InsertPoli(poli.Name)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
@@ -127,7 +135,7 @@ func (api *API) insertDokter(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.petugasRepo.InsertDokter(dokter.Email, dokter.Name, dokter.Password, dokter.Poli)
+	err = api.dokterRepo.InsertDokter(dokter.Email, dokter.Name, dokter.Password, dokter.STRDokter, dokter.SIPDokter, dokter.Status, dokter.Poli)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
@@ -135,9 +143,11 @@ func (api *API) insertDokter(w http.ResponseWriter, req *http.Request) {
 	}
 
 	insertDokter := Dokter{
-		Email: dokter.Email,
-		Name:  dokter.Name,
-		Poli:  dokter.Poli,
+		Email:     dokter.Email,
+		Name:      dokter.Name,
+		Poli:      dokter.Poli,
+		STRDokter: dokter.STRDokter,
+		SIPDokter: dokter.SIPDokter,
 	}
 
 	insertDokterResponse := InsertDokterSuccessResponse{
@@ -159,7 +169,7 @@ func (api *API) insertJadwalDokter(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.petugasRepo.InsertJadwal(jadwal.DokterID, jadwal.Hari, jadwal.WaktuMulai, jadwal.WaktuBerakhir)
+	err = api.jadwalRepo.InsertJadwal(jadwal.DokterID, jadwal.Hari, jadwal.WaktuMulai, jadwal.WaktuBerakhir)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
@@ -184,7 +194,7 @@ func (api *API) insertJadwalDokter(w http.ResponseWriter, req *http.Request) {
 func (api *API) fetchDokter(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	dokter, err := api.petugasRepo.FetchDokter()
+	dokter, err := api.dokterRepo.FetchDokter()
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -204,7 +214,7 @@ func (api *API) fetchDokter(w http.ResponseWriter, req *http.Request) {
 func (api *API) fetchJadwalDokter(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	reservasi, err := api.petugasRepo.FetchJadwalDokter()
+	reservasi, err := api.jadwalRepo.FetchJadwalDokter()
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -224,7 +234,7 @@ func (api *API) fetchJadwalDokter(w http.ResponseWriter, req *http.Request) {
 func (api *API) lihatReservasiUser(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	reservasi, err := api.petugasRepo.LihatReservasi()
+	reservasi, err := api.reservasiRepo.LihatReservasi()
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -277,7 +287,7 @@ func (api *API) kirimDataLaporan(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	reservasi, err := api.petugasRepo.KirimDataLaporan(bodyRequest.WaktuAwal, bodyRequest.WaktuAkhir)
+	reservasi, err := api.laporanRepo.KirimDataLaporan(bodyRequest.WaktuAwal, bodyRequest.WaktuAkhir)
 
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -305,7 +315,7 @@ func (api *API) ubahPoli(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.petugasRepo.UbahPoli(bodyRequest.ID, bodyRequest.Nama)
+	err = api.poliRepo.UbahPoli(bodyRequest.ID, bodyRequest.Nama)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
@@ -330,7 +340,7 @@ func (api *API) ubahJadwalDokter(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.petugasRepo.UbahJadwalDokter(bodyRequest.ReservasiID, bodyRequest.Hari, bodyRequest.WaktuMulai, bodyRequest.WaktuBerakhir)
+	err = api.jadwalRepo.UbahJadwalDokter(bodyRequest.ReservasiID, bodyRequest.Hari, bodyRequest.WaktuMulai, bodyRequest.WaktuBerakhir)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
@@ -357,7 +367,7 @@ func (api *API) reservasiPasien(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.petugasRepo.ReservasiPasien(int64(userID), reservasi.ID, reservasi.Jadwal_Tanggal, reservasi.NIK, reservasi.Nama, reservasi.Gender,
+	err = api.petugasRepo.ReservasiPasien(int64(userID), reservasi.JadwalID, reservasi.Jadwal_Tanggal, reservasi.NIK, reservasi.Nama, reservasi.Gender,
 		reservasi.BornDate, reservasi.BornPlace, reservasi.Adress, reservasi.PhoneNumber, reservasi.Keluhan)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -371,4 +381,29 @@ func (api *API) reservasiPasien(w http.ResponseWriter, req *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(reservasiResponse)
+}
+
+func (api *API) ubahStatusDokter(w http.ResponseWriter, req *http.Request) {
+	api.AllowOrigin(w, req)
+
+	var bodyRequest StatusDokter
+	err := json.NewDecoder(req.Body).Decode(&bodyRequest)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	encoder := json.NewEncoder(w)
+	err = api.dokterRepo.UbahStatusDokter(bodyRequest.DokterID, bodyRequest.Status)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		encoder.Encode(AuthErrorResponse{Error: err.Error()})
+		return
+	}
+
+	statusDokterResponse := VerifikasiResponse{
+		Message: "Berhasil merubah status dokter",
+	}
+
+	json.NewEncoder(w).Encode(statusDokterResponse)
 }

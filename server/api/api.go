@@ -3,37 +3,41 @@ package api
 import (
 	"fmt"
 	"net/http"
-	"tugas-akhir/internal/repositories/admin"
-	"tugas-akhir/internal/repositories/auth"
-	"tugas-akhir/internal/repositories/dokter"
-	"tugas-akhir/internal/repositories/pasien"
-	"tugas-akhir/internal/repositories/petugas"
-	"tugas-akhir/internal/repositories/user"
+	"tugas-akhir/internal/repositories"
 )
 
 type API struct {
-	usersRepo   user.UserRepo
-	authRepo    auth.AuthRepo
-	adminRepo   admin.AdminRepo
-	pasienRepo  pasien.PasienRepo
-	petugasRepo petugas.PetugasRepo
-	dokterRepo  dokter.DokterRepo
+	usersRepo     repositories.UserRepo
+	authRepo      repositories.AuthRepo
+	dokterRepo    repositories.DokterRepo
+	pasienRepo    repositories.PasienRepo
+	petugasRepo   repositories.PetugasRepo
+	timeRepo      repositories.TimeRepo
+	jadwalRepo    repositories.JadwalRepo
+	poliRepo      repositories.PoliRepo
+	reservasiRepo repositories.ReservasiRepo
+	laporanRepo   repositories.LaporanRepo
 
 	mux *http.ServeMux
 }
 
-func NewAPI(usersRepo user.UserRepo, authRepo auth.AuthRepo, adminRepo admin.AdminRepo,
-	pasienRepo pasien.PasienRepo, petugasRepo petugas.PetugasRepo, dokterRepo dokter.DokterRepo) API {
+func NewAPI(usersRepo repositories.UserRepo, authRepo repositories.AuthRepo, dokterRepo repositories.DokterRepo,
+	pasienRepo repositories.PasienRepo, petugasRepo repositories.PetugasRepo, timeRepo repositories.TimeRepo,
+	jadwalRepo repositories.JadwalRepo, poliRepo repositories.PoliRepo, reservasiRepo repositories.ReservasiRepo, laporanRepo repositories.LaporanRepo) API {
 
 	mux := http.NewServeMux()
 	api := API{
-		usersRepo, authRepo, adminRepo, pasienRepo, petugasRepo, dokterRepo, mux,
+		usersRepo, authRepo, dokterRepo, pasienRepo, petugasRepo, timeRepo, jadwalRepo, poliRepo, reservasiRepo, laporanRepo, mux,
 	}
 
 	// API without middleware
 	mux.Handle("/api/register", api.POST(http.HandlerFunc(api.register)))
 	mux.Handle("/api/login", api.POST(http.HandlerFunc(api.login)))
 	mux.Handle("/api/logout", api.POST(http.HandlerFunc(api.logout)))
+
+	// API user dengan middleware
+	mux.Handle("/api/user/password/change", api.POST(api.AuthMiddleWare(http.HandlerFunc(api.ubahPassword))))
+	mux.Handle("/api/user/password/reset", api.POST(api.AuthMiddleWare(http.HandlerFunc(api.resetPassword))))
 
 	// API dokter
 	mux.Handle("/api/dokter/lihat/jadwal", api.GET(api.AuthMiddleWare(api.DokterMiddleware(http.HandlerFunc(api.lihatJadwalReservasi)))))
@@ -63,6 +67,7 @@ func NewAPI(usersRepo user.UserRepo, authRepo auth.AuthRepo, adminRepo admin.Adm
 	mux.Handle("/api/petugas/ubah/poli", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.ubahPoli)))))
 	mux.Handle("/api/petugas/ubah/jadwal", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.ubahJadwalDokter)))))
 	mux.Handle("/api/petugas/laporan", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.kirimDataLaporan)))))
+	mux.Handle("/api/petugas/ganti/status/dokter", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.ubahStatusDokter)))))
 
 	// API admin with middleware
 	mux.Handle("/api/admin/lihat/data/user", api.GET(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.lihatDataUser)))))

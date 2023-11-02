@@ -1,12 +1,11 @@
-package user
+package repositories
 
 import (
 	"database/sql"
 	"errors"
 	"regexp"
 	"strings"
-	"time"
-	"tugas-akhir/internal/repositories/model"
+	"tugas-akhir/internal/model"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -219,7 +218,8 @@ func (u *UserRepo) InsertUser(email, nama, role, password string) error {
 	var sqlStmt = `INSERT INTO USERS (email, nama, password, role, created_at) VALUES (?, ?, ?, ?, ?)`
 
 	// set waktu lokal
-	waktuLokal, _ := u.SetLocalTime()
+	timeRepo := NewTimeRepositories(u.db)
+	waktuLokal, _ := timeRepo.SetLocalTime()
 
 	_, err := u.db.Exec(sqlStmt, email, nama, hashPassword, role, waktuLokal)
 	if err != nil {
@@ -227,14 +227,4 @@ func (u *UserRepo) InsertUser(email, nama, role, password string) error {
 	}
 
 	return err
-}
-
-func (u *UserRepo) SetLocalTime() (string, error) {
-	// set lokasi
-	location, _ := time.LoadLocation("Asia/Jakarta")
-
-	// get waktu lokal
-	localTime := time.Now().In(location).Format("2006-01-02 15:04:05")
-
-	return localTime, nil
 }

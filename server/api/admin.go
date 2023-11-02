@@ -82,7 +82,7 @@ func (api *API) insertPetugas(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.adminRepo.InsertPetugas(petugas.Email, petugas.Name, petugas.Password)
+	err = api.petugasRepo.InsertPetugas(petugas.Email, petugas.Name, petugas.Password)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
