@@ -19,6 +19,7 @@ func NewAuthRepositories(db *sql.DB) *AuthRepo {
 func (auth *AuthRepo) Register(email, nama, password, nik, gender, tgl_lahir, tmpt_lahir, alamat, no_hp, ktp_pasien string) error {
 
 	role := "pasien"
+	status := "tidak aktif"
 	userRepo := NewUserRepositories(auth.db)
 
 	err := userRepo.CheckUserInput(email, nama, password, nik, gender, tgl_lahir, tmpt_lahir, alamat, no_hp, ktp_pasien)
@@ -31,7 +32,7 @@ func (auth *AuthRepo) Register(email, nama, password, nik, gender, tgl_lahir, tm
 		return errors.New("NIK telah terdaftar")
 	}
 
-	err = userRepo.InsertUser(email, nama, role, password)
+	err = userRepo.InsertUser(email, nama, role, password, status)
 	if err != nil {
 		return err
 	}
@@ -123,17 +124,61 @@ func (u *AuthRepo) UbahPassword(id_user int64, password_lama, password_baru stri
 	return errors.New("password lama tidak sesuai")
 }
 
-func (u *AuthRepo) ResetPassword(id_user int64, password_baru string) error {
+func (u *AuthRepo) ResetPassword(email, input_token, password_baru string) error {
+
+	userRepo := NewUserRepositories(u.db)
+	id_user, _ := userRepo.FetchUserID(email)
+
+	tokenRepo := NewTokenRepository(u.db)
+	token, err := tokenRepo.TokenForgetPassword(*id_user)
+
+	if err != nil {
+		return err
+	}
+
+	if input_token != token {
+		return errors.New("token tidak sesuai")
+	}
 
 	// hash password
 	hashPassword, _ := HashPassword(password_baru)
 
 	var sqlStmtUpdate string = `UPDATE users SET password = ? WHERE id = ?`
 
-	_, err := u.db.Exec(sqlStmtUpdate, hashPassword, id_user)
+	_, err = u.db.Exec(sqlStmtUpdate, hashPassword, id_user)
 	if err != nil {
 		return errors.New("gagal mengubah password")
 	}
+
+	_ = tokenRepo.ChangeStatusToken(*id_user, token)
+
+	return nil
+}
+
+func (u *AuthRepo) EmailActivation(email, input_token string) error {
+
+	userRepo := NewUserRepositories(u.db)
+	id_user, _ := userRepo.FetchUserID(email)
+
+	tokenRepo := NewTokenRepository(u.db)
+	token, err := tokenRepo.TokenEmailActivation(*id_user)
+
+	if err != nil {
+		return err
+	}
+
+	if input_token != token {
+		return errors.New("token tidak sesuai")
+	}
+
+	var sqlStmtUpdate string = `UPDATE users SET status = "aktif" WHERE id = ?`
+
+	_, err = u.db.Exec(sqlStmtUpdate, id_user)
+	if err != nil {
+		return errors.New("gagal aktivasi akun")
+	}
+
+	_ = tokenRepo.ChangeStatusToken(*id_user, token)
 
 	return nil
 }

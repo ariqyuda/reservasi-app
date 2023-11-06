@@ -71,9 +71,25 @@ func (api *API) AuthMiddleWare(next http.Handler) http.Handler {
 
 		ctx := context.WithValue(r.Context(), "email", claims.Email)
 		ctx = context.WithValue(ctx, "role", claims.Role)
+		ctx = context.WithValue(ctx, "status", claims.Status)
 		ctx = context.WithValue(ctx, "id", claims.ID)
 		ctx = context.WithValue(ctx, "props", claims)
 		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+func (api *API) StatusAKunMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		api.AllowOrigin(w, r)
+		encoder := json.NewEncoder(w)
+		status := r.Context().Value("status")
+		if status != "aktif" {
+			w.WriteHeader(http.StatusForbidden)
+			encoder.Encode(AuthErrorResponse{Error: "akun tidak aktif"})
+			return
+		}
+
+		next.ServeHTTP(w, r)
 	})
 }
 

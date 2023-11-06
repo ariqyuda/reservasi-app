@@ -121,15 +121,14 @@ func main() {
 	}
 
 	_, err = db.Exec(`
-	CREATE TABLE IF NOT EXISTS ganti_password (
+	CREATE TABLE IF NOT EXISTS token (
 		id INTEGER AUTO_INCREMENT PRIMARY KEY,
 		user_id INTEGER NOT NULL,
-		token STRING VARCHAR(255) NOT NULL,
+		token VARCHAR(255) NOT NULL,
+		fungsi VARCHAR(255) NOT NULL,
+		status_tkn VARCHAR(255) NOT NULL,
 		created_at DATETIME NOT NULL,
-		updated_at DATETIME,
-		FOREIGN KEY (user_id) REFERENCES users(id),
-		FOREIGN KEY (dokter_id) REFERENCES dokter(id),
-		FOREIGN KEY (poli_id) REFERENCES poli(id)
+		FOREIGN KEY (user_id) REFERENCES users(id)
 	);
 	`)
 

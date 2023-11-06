@@ -24,7 +24,8 @@ func main() {
 	poliRepo := repositories.NewPoliRepositories(db)
 	reservasiRepo := repositories.NewReservasiRepositories(db)
 	laporanRepo := repositories.NewLaporanRepositories(db)
+	tokenRepo := repositories.NewTokenRepository(db)
 
-	mainAPI := api.NewAPI(*usersRepo, *authRepo, *dokterRepo, *pasienRepo, *petugasRepo, *timeRepo, *jadwalRepo, *poliRepo, *reservasiRepo, *laporanRepo)
+	mainAPI := api.NewAPI(*usersRepo, *authRepo, *dokterRepo, *pasienRepo, *petugasRepo, *timeRepo, *jadwalRepo, *poliRepo, *reservasiRepo, *laporanRepo, *tokenRepo)
 	mainAPI.Start()
 }

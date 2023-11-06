@@ -13,10 +13,11 @@ func NewPetugasRepositories(db *sql.DB) *PetugasRepo {
 func (prs *PetugasRepo) InsertPetugas(email, nama, password string) error {
 
 	role := "petugas"
+	status := "aktif"
 
 	userRepo := NewUserRepositories(prs.db)
 
-	err := userRepo.InsertUser(email, nama, role, password)
+	err := userRepo.InsertUser(email, nama, role, password, status)
 	if err != nil {
 		return err
 	}

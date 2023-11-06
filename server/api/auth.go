@@ -29,6 +29,8 @@ type Pasien struct {
 }
 
 type Password struct {
+	Email        string `json:"email"`
+	Token        string `json:"token"`
 	PasswordBaru string `json:"password_baru"`
 	PasswordLama string `json:"password_lama"`
 }
@@ -56,9 +58,10 @@ type PasswordResponse struct {
 var jwtKey = []byte("key")
 
 type CLaims struct {
-	ID    int64
-	Email string
-	Role  string
+	ID     int64
+	Email  string
+	Role   string
+	Status string
 	jwt.RegisteredClaims
 }
 
@@ -120,13 +123,15 @@ func (api *API) login(w http.ResponseWriter, req *http.Request) {
 
 	userRole, _ := api.usersRepo.FetchUserRole(*res)
 	userId, _ := api.usersRepo.FetchUserID(*res)
+	userStatus, _ := api.usersRepo.FetchAccountStatus(*res)
 
 	expirationTime := time.Now().Add(60 * time.Minute)
 
 	claims := &CLaims{
-		ID:    *userId,
-		Email: *res,
-		Role:  *userRole,
+		ID:     *userId,
+		Email:  *res,
+		Role:   *userRole,
+		Status: *userStatus,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
@@ -212,10 +217,33 @@ func (api *API) ubahPassword(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(authResponse)
 }
 
-func (api *API) resetPassword(w http.ResponseWriter, req *http.Request) {
+func (api *API) sendTokenForgetPassword(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	userID := req.Context().Value("id").(int64)
+	var user User
+	err := json.NewDecoder(req.Body).Decode(&user)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	encoder := json.NewEncoder(w)
+	err = api.tokenRepo.SendTokenForgetPassword(user.Email)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		encoder.Encode(AuthErrorResponse{Error: err.Error()})
+		return
+	}
+
+	authResponse := PasswordResponse{
+		Message: "token berhasil dikirim",
+	}
+
+	json.NewEncoder(w).Encode(authResponse)
+}
+
+func (api *API) resetPassword(w http.ResponseWriter, req *http.Request) {
+	api.AllowOrigin(w, req)
 
 	var password Password
 	err := json.NewDecoder(req.Body).Decode(&password)
@@ -225,7 +253,7 @@ func (api *API) resetPassword(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.authRepo.ResetPassword(userID, password.PasswordBaru)
+	err = api.authRepo.ResetPassword(password.Email, password.Token, password.PasswordBaru)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
@@ -234,6 +262,56 @@ func (api *API) resetPassword(w http.ResponseWriter, req *http.Request) {
 
 	authResponse := PasswordResponse{
 		Message: "Berhasil mengganti password",
+	}
+
+	json.NewEncoder(w).Encode(authResponse)
+}
+
+func (api *API) sendTokenEmailVerification(w http.ResponseWriter, req *http.Request) {
+	api.AllowOrigin(w, req)
+
+	var user User
+	err := json.NewDecoder(req.Body).Decode(&user)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	encoder := json.NewEncoder(w)
+	err = api.tokenRepo.SendEmailActivation(user.Email)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		encoder.Encode(AuthErrorResponse{Error: err.Error()})
+		return
+	}
+
+	authResponse := PasswordResponse{
+		Message: "token berhasil dikirim",
+	}
+
+	json.NewEncoder(w).Encode(authResponse)
+}
+
+func (api *API) emailActivation(w http.ResponseWriter, req *http.Request) {
+	api.AllowOrigin(w, req)
+
+	var password Password
+	err := json.NewDecoder(req.Body).Decode(&password)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	encoder := json.NewEncoder(w)
+	err = api.authRepo.EmailActivation(password.Email, password.Token)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		encoder.Encode(AuthErrorResponse{Error: err.Error()})
+		return
+	}
+
+	authResponse := PasswordResponse{
+		Message: "Aktivasi email berhasil",
 	}
 
 	json.NewEncoder(w).Encode(authResponse)

@@ -10,13 +10,13 @@ type Poli struct {
 }
 
 type Dokter struct {
-	Email     string `json:"email"`
-	Name      string `json:"nama"`
-	Password  string `json:"password"`
-	Poli      string `json:"nama_poli"`
-	STRDokter string `json:"str_dokter"`
-	SIPDokter string `json:"sip_dokter"`
-	Status    string `json:"status"`
+	Email        string `json:"email"`
+	Name         string `json:"nama"`
+	Password     string `json:"password"`
+	Poli         string `json:"nama_poli"`
+	STRDokter    string `json:"str_dokter"`
+	SIPDokter    string `json:"sip_dokter"`
+	StatusDokter string `json:"status"`
 }
 
 type JadwalDokter struct {
@@ -135,7 +135,7 @@ func (api *API) insertDokter(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.dokterRepo.InsertDokter(dokter.Email, dokter.Name, dokter.Password, dokter.STRDokter, dokter.SIPDokter, dokter.Status, dokter.Poli)
+	err = api.dokterRepo.InsertDokter(dokter.Email, dokter.Name, dokter.Password, dokter.STRDokter, dokter.SIPDokter, dokter.StatusDokter, dokter.Poli)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})

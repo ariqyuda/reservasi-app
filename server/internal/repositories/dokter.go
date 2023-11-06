@@ -43,12 +43,13 @@ func (d *DokterRepo) FetchDokter() ([]model.Dokter, error) {
 	return dokter, nil
 }
 
-func (d *DokterRepo) InsertDokter(email, nama, password, str_dokter, sip_dokter, poli_nama, status string) error {
+func (d *DokterRepo) InsertDokter(email, nama, password, str_dokter, sip_dokter, poli_nama, status_dokter string) error {
 	role := "dokter"
+	status := "aktif"
 
 	userRepo := NewUserRepositories(d.db)
 
-	err := userRepo.InsertUser(email, nama, role, password)
+	err := userRepo.InsertUser(email, nama, role, password, status)
 	if err != nil {
 		return err
 	}
@@ -63,7 +64,7 @@ func (d *DokterRepo) InsertDokter(email, nama, password, str_dokter, sip_dokter,
 	timeRepo := NewTimeRepositories(d.db)
 	waktuLokal, _ := timeRepo.SetLocalTime()
 
-	_, err = d.db.Exec(sqlStmt, idUser, poliID, nama, str_dokter, sip_dokter, status, waktuLokal)
+	_, err = d.db.Exec(sqlStmt, idUser, poliID, nama, str_dokter, sip_dokter, status_dokter, waktuLokal)
 	if err != nil {
 		return err
 	}

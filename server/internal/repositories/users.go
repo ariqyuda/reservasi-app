@@ -64,6 +64,18 @@ func (u *UserRepo) FetchUserID(email string) (*int64, error) {
 	return &id, err
 }
 
+func (u *UserRepo) FetchAccountStatus(email string) (*string, error) {
+	var status string
+
+	// query untuk mengambil role user berdasarkan email
+	var sqlStmt string = `SELECT status FROM users WHERE email = ?`
+
+	row := u.db.QueryRow(sqlStmt, email)
+	err := row.Scan(&status)
+
+	return &status, err
+}
+
 func (u *UserRepo) FetchPasienID(user_id int64) (*int64, error) {
 	var sqlStmt string = `SELECT id FROM pasien WHERE user_id = ?`
 	var id int64
@@ -173,7 +185,7 @@ func (u *UserRepo) CheckUserInput(email, nama, password, nik, gender, tgl_lahir,
 	return nil
 }
 
-func (u *UserRepo) InsertUser(email, nama, role, password string) error {
+func (u *UserRepo) InsertUser(email, nama, role, password, status string) error {
 	// email checking
 	// check format email
 	checkEmailFormat := strings.Contains(email, "@gmail.com")
@@ -215,13 +227,13 @@ func (u *UserRepo) InsertUser(email, nama, role, password string) error {
 
 	// insert to database
 	// query untuk insert user
-	var sqlStmt = `INSERT INTO USERS (email, nama, password, role, created_at) VALUES (?, ?, ?, ?, ?)`
+	var sqlStmt = `INSERT INTO USERS (email, nama, password, role, status, created_at) VALUES (?, ?, ?, ?, ?, ?)`
 
 	// set waktu lokal
 	timeRepo := NewTimeRepositories(u.db)
 	waktuLokal, _ := timeRepo.SetLocalTime()
 
-	_, err := u.db.Exec(sqlStmt, email, nama, hashPassword, role, waktuLokal)
+	_, err := u.db.Exec(sqlStmt, email, nama, hashPassword, role, status, waktuLokal)
 	if err != nil {
 		return err
 	}

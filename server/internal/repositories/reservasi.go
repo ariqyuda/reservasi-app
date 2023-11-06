@@ -93,9 +93,10 @@ func (p *PasienRepo) FetchLatestReservasiByUserID(user_id int64) (model.Reservas
 		FROM reservasi r
 		JOIN dokter d ON r.dokter_id = d.id
 		JOIN poli p ON r.poli_id = p.id
-		WHERE r.id = (SELECT max(r.id) FROM reservasi r)`
+		WHERE r.user_id = ?
+		ORDER BY r.created_at DESC LIMIT 1`
 
-	row := p.db.QueryRow(sqlStmt)
+	row := p.db.QueryRow(sqlStmt, user_id)
 
 	var reservasi model.Reservasi
 	err := row.Scan(
