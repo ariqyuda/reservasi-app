@@ -10,6 +10,7 @@ type Poli struct {
 }
 
 type Dokter struct {
+	DokterID     int64  `json:"id_dokter"`
 	Email        string `json:"email"`
 	Name         string `json:"nama"`
 	Password     string `json:"password"`
@@ -39,8 +40,9 @@ type UbahJadwalDokter struct {
 }
 
 type VerifReservasi struct {
-	ID     int64  `json:"id"`
-	Status string `json:"status"`
+	ID               int64  `json:"id"`
+	Status           string `json:"status"`
+	AlasanVerifikasi string `json:"alasan_verifikasi"`
 }
 
 type StatusDokter struct {
@@ -262,7 +264,7 @@ func (api *API) verifikasiReservasi(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.petugasRepo.VerifikasiReservasi(bodyRequest.ID, bodyRequest.Status)
+	err = api.petugasRepo.VerifikasiReservasi(bodyRequest.ID, bodyRequest.Status, bodyRequest.AlasanVerifikasi)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
@@ -403,6 +405,31 @@ func (api *API) ubahStatusDokter(w http.ResponseWriter, req *http.Request) {
 
 	statusDokterResponse := VerifikasiResponse{
 		Message: "Berhasil merubah status dokter",
+	}
+
+	json.NewEncoder(w).Encode(statusDokterResponse)
+}
+
+func (api *API) ubahDataDokter(w http.ResponseWriter, req *http.Request) {
+	api.AllowOrigin(w, req)
+
+	var bodyRequest Dokter
+	err := json.NewDecoder(req.Body).Decode(&bodyRequest)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	encoder := json.NewEncoder(w)
+	err = api.dokterRepo.UbahDataDokter(bodyRequest.DokterID, bodyRequest.Name, bodyRequest.STRDokter, bodyRequest.SIPDokter)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		encoder.Encode(AuthErrorResponse{Error: err.Error()})
+		return
+	}
+
+	statusDokterResponse := VerifikasiResponse{
+		Message: "Berhasil memperbarui data dokter",
 	}
 
 	json.NewEncoder(w).Encode(statusDokterResponse)

@@ -159,13 +159,13 @@ func (r *ReservasiRepo) LihatReservasi() ([]model.Reservasi, error) {
 	return reservasi, nil
 }
 
-func (prs *PetugasRepo) VerifikasiReservasi(reservasi_id int64, status string) error {
-	var sqlStmt string = `UPDATE reservasi SET status = ?, updated_at = ? WHERE id = ?`
+func (prs *PetugasRepo) VerifikasiReservasi(reservasi_id int64, status, alasan_verifikasi string) error {
+	var sqlStmt string = `UPDATE reservasi SET status = ?, alasan_verifikasi = ?, updated_at = ? WHERE id = ?`
 
 	timeRepo := NewTimeRepositories(prs.db)
 	waktuLokal, _ := timeRepo.SetLocalTime()
 
-	_, err := prs.db.Exec(sqlStmt, status, waktuLokal, reservasi_id)
+	_, err := prs.db.Exec(sqlStmt, status, alasan_verifikasi, waktuLokal, reservasi_id)
 
 	if err != nil {
 		return err

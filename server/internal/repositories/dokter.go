@@ -149,3 +149,18 @@ func (d *DokterRepo) UbahStatusDokter(dokter_id int64, status string) error {
 
 	return err
 }
+
+func (d *DokterRepo) UbahDataDokter(dokter_id int64, nama, str_dokter, sip_dokter string) error {
+	var sqlStmt string = `UPDATE dokter SET nama = ?, str_dokter = ?, sip_dokter = ?, updated_at = ? WHERE id = ?`
+
+	timeRepo := NewTimeRepositories(d.db)
+	waktuLokal, _ := timeRepo.SetLocalTime()
+
+	_, err := d.db.Exec(sqlStmt, nama, str_dokter, sip_dokter, waktuLokal, dokter_id)
+
+	if err != nil {
+		return err
+	}
+
+	return err
+}

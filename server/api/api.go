@@ -62,6 +62,7 @@ func NewAPI(usersRepo repositories.UserRepo, authRepo repositories.AuthRepo, dok
 	mux.Handle("/api/petugas/insert/dokter", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.insertDokter)))))
 	mux.Handle("/api/petugas/insert/jadwal", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.insertJadwalDokter)))))
 	mux.Handle("/api/petugas/fetch/dokter", api.GET(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.fetchDokter)))))
+	mux.Handle("/api/petugas/ubah/data/dokter", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.ubahDataDokter)))))
 	mux.Handle("/api/petugas/lihat/poli", api.GET(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.lihatPoli)))))
 	mux.Handle("/api/petugas/lihat/poli/dokter", api.GET(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.lihatDokter)))))
 	mux.Handle("/api/petugas/lihat/poli/dokter/jadwal", api.GET(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.lihatJadwalDokter)))))
