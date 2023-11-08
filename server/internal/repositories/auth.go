@@ -3,9 +3,11 @@ package repositories
 import (
 	"database/sql"
 	"errors"
+	"regexp"
 	"tugas-akhir/internal/model"
 
 	"golang.org/x/crypto/bcrypt"
+	"gopkg.in/gomail.v2"
 )
 
 type AuthRepo struct {
@@ -22,9 +24,20 @@ func (auth *AuthRepo) Register(email, nama, password, nik, gender, tgl_lahir, tm
 	status := "tidak aktif"
 	userRepo := NewUserRepositories(auth.db)
 
-	err := userRepo.CheckUserInput(email, nama, password, nik, gender, tgl_lahir, tmpt_lahir, alamat, no_hp, ktp_pasien)
-	if err != nil {
-		return err
+	//check format nik
+	if len(nik) > 16 {
+		return errors.New("nik tidak boleh lebih dari 16 karakter")
+	}
+
+	checkNIK := regexp.MustCompile(`^[0-9]+$`).MatchString(nik)
+	if !checkNIK {
+		return errors.New("nik hanya boleh mengandung angka")
+	}
+
+	//check format no hp
+	checkNoHP := regexp.MustCompile(`^[0-9]+$`).MatchString(no_hp)
+	if !checkNoHP {
+		return errors.New("format no hp salah")
 	}
 
 	pasien, _ := userRepo.FetchPasienByNIK(nik)
@@ -32,7 +45,7 @@ func (auth *AuthRepo) Register(email, nama, password, nik, gender, tgl_lahir, tm
 		return errors.New("NIK telah terdaftar")
 	}
 
-	err = userRepo.InsertUser(email, nama, role, password, status)
+	err := userRepo.InsertUser(email, nama, role, password, status)
 	if err != nil {
 		return err
 	}
@@ -46,6 +59,27 @@ func (auth *AuthRepo) Register(email, nama, password, nik, gender, tgl_lahir, tm
 
 	_, err = auth.db.Exec(sqlStmt, idUser, nik, nama, gender, tgl_lahir, tmpt_lahir, alamat, no_hp, ktp_pasien, waktuLokal)
 	if err != nil {
+		return err
+	}
+
+	// kirim email token ke user
+	mailer := gomail.NewMessage()
+	mailer.SetHeader("From", "apitest481@gmail.com")
+	mailer.SetHeader("To", email)
+	mailer.SetHeader("Subject", "Token Aktivasi Email")
+
+	// kirim link
+	mailer.SetBody("text/html", "Klik link berikut untuk aktivasi email anda <a href='http://localhost:3000/verify'>Aktivasi</a>")
+	// mailer.SetBody("text/plain", "Token untuk aktivasi email anda adalah "+token)
+
+	dialer := gomail.NewDialer(
+		"smtp.gmail.com",
+		587,
+		"apitest481@gmail.com",
+		"ewiv ryzn xevw jwgr",
+	)
+
+	if err := dialer.DialAndSend(mailer); err != nil {
 		return err
 	}
 

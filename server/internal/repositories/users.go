@@ -158,32 +158,32 @@ func HashPassword(password string) (string, error) {
 	return string(bytes), err
 }
 
-func (u *UserRepo) CheckUserInput(email, nama, password, nik, gender, tgl_lahir, tmpt_lahir, alamat, no_hp, ktp_pasien string) error {
+// func (u *UserRepo) CheckUserInput(email, nama, password, nik, gender, tgl_lahir, tmpt_lahir, alamat, no_hp, ktp_pasien string) error {
 
-	//check data input
-	if len(email) < 1 || len(nama) < 1 || len(password) < 1 || len(nik) < 1 || len(gender) < 1 || len(tgl_lahir) < 1 ||
-		len(tmpt_lahir) < 1 || len(alamat) < 1 || len(no_hp) < 1 || len(ktp_pasien) < 1 {
-		return errors.New("data tidak boleh kosong")
-	}
+// 	//check data input
+// 	if len(email) < 1 || len(nama) < 1 || len(password) < 1 || len(nik) < 1 || len(gender) < 1 || len(tgl_lahir) < 1 ||
+// 		len(tmpt_lahir) < 1 || len(alamat) < 1 || len(no_hp) < 1 || len(ktp_pasien) < 1 {
+// 		return errors.New("data tidak boleh kosong")
+// 	}
 
-	//check format nik
-	if len(nik) > 16 {
-		return errors.New("nik tidak boleh lebih dari 16 karakter")
-	}
+// 	//check format nik
+// 	if len(nik) > 16 {
+// 		return errors.New("nik tidak boleh lebih dari 16 karakter")
+// 	}
 
-	checkNIK := regexp.MustCompile(`^[0-9]+$`).MatchString(nik)
-	if !checkNIK {
-		return errors.New("nik hanya boleh mengandung angka")
-	}
+// 	checkNIK := regexp.MustCompile(`^[0-9]+$`).MatchString(nik)
+// 	if !checkNIK {
+// 		return errors.New("nik hanya boleh mengandung angka")
+// 	}
 
-	//check format no hp
-	checkNoHP := regexp.MustCompile(`^[0-9]+$`).MatchString(no_hp)
-	if !checkNoHP {
-		return errors.New("format no hp salah")
-	}
+// 	//check format no hp
+// 	checkNoHP := regexp.MustCompile(`^[0-9]+$`).MatchString(no_hp)
+// 	if !checkNoHP {
+// 		return errors.New("format no hp salah")
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
 func (u *UserRepo) InsertUser(email, nama, role, password, status string) error {
 	// email checking
