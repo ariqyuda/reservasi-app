@@ -7,7 +7,6 @@ import (
 	"tugas-akhir/internal/model"
 
 	"golang.org/x/crypto/bcrypt"
-	"gopkg.in/gomail.v2"
 )
 
 type AuthRepo struct {
@@ -62,35 +61,17 @@ func (auth *AuthRepo) Register(email, nama, password, nik, gender, tgl_lahir, tm
 		return err
 	}
 
-	// kirim email token ke user
-	mailer := gomail.NewMessage()
-	mailer.SetHeader("From", "apitest481@gmail.com")
-	mailer.SetHeader("To", email)
-	mailer.SetHeader("Subject", "Token Aktivasi Email")
-
-	// kirim link
-	mailer.SetBody("text/html", "Klik link berikut untuk aktivasi email anda <a href='http://localhost:3000/verify'>Aktivasi</a>")
-	// mailer.SetBody("text/plain", "Token untuk aktivasi email anda adalah "+token)
-
-	dialer := gomail.NewDialer(
-		"smtp.gmail.com",
-		587,
-		"apitest481@gmail.com",
-		"ewiv ryzn xevw jwgr",
-	)
-
-	if err := dialer.DialAndSend(mailer); err != nil {
-		return err
-	}
+	tokenRepo := NewTokenRepository(auth.db)
+	_ = tokenRepo.SendEmailActivation(email)
 
 	return err
 }
 
-func (u *AuthRepo) Login(email, password string) (*string, error) {
+func (auth *AuthRepo) Login(email, password string) (*string, error) {
 	// query untuk mengambil data user berdasarkan email dan password
 	sqlStmt := `SELECT id, email, nama, password, role FROM users WHERE email = ?`
 
-	row := u.db.QueryRow(sqlStmt, email)
+	row := auth.db.QueryRow(sqlStmt, email)
 
 	var user model.User
 	err := row.Scan(

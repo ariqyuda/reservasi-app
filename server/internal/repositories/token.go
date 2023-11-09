@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"math/rand"
+	"strconv"
 	"tugas-akhir/internal/model"
 
 	"gopkg.in/gomail.v2"
@@ -131,13 +132,17 @@ func (tkn *TokenRepo) SendEmailActivation(email string) error {
 		return err
 	}
 
+	// int64 to string
+	userId := strconv.FormatInt(int64(*user_id), 10)
+
 	// kirim email token ke user
 	mailer := gomail.NewMessage()
 	mailer.SetHeader("From", "apitest481@gmail.com")
 	mailer.SetHeader("To", email)
 	mailer.SetHeader("Subject", "Token Aktivasi Email")
 
-	mailer.SetBody("text/plain", "Token untuk aktivasi email anda adalah "+token)
+	// kirim link aktivasi email
+	mailer.SetBody("text/html", "Klik link berikut untuk aktivasi email anda <a href='http://localhost:3080/verify/?userid/"+userId+"?token="+token+"'>Aktivasi Email</a>")
 
 	dialer := gomail.NewDialer(
 		"smtp.gmail.com",
