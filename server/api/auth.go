@@ -29,6 +29,7 @@ type Pasien struct {
 }
 
 type Password struct {
+	UserID       int64  `json:"id_user"`
 	Email        string `json:"email"`
 	Token        string `json:"token"`
 	PasswordBaru string `json:"password_baru"`
@@ -303,7 +304,7 @@ func (api *API) emailActivation(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.authRepo.EmailActivation(password.Email, password.Token)
+	err = api.authRepo.EmailActivation(password.UserID, password.Token)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})

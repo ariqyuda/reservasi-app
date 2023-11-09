@@ -170,13 +170,10 @@ func (u *AuthRepo) ResetPassword(email, input_token, password_baru string) error
 	return nil
 }
 
-func (u *AuthRepo) EmailActivation(email, input_token string) error {
-
-	userRepo := NewUserRepositories(u.db)
-	id_user, _ := userRepo.FetchUserID(email)
+func (u *AuthRepo) EmailActivation(id_user int64, input_token string) error {
 
 	tokenRepo := NewTokenRepository(u.db)
-	token, err := tokenRepo.TokenEmailActivation(*id_user)
+	token, err := tokenRepo.TokenEmailActivation(id_user)
 
 	if err != nil {
 		return err
@@ -193,7 +190,7 @@ func (u *AuthRepo) EmailActivation(email, input_token string) error {
 		return errors.New("gagal aktivasi akun")
 	}
 
-	_ = tokenRepo.ChangeStatusToken(*id_user, token)
+	_ = tokenRepo.ChangeStatusToken(id_user, token)
 
 	return nil
 }

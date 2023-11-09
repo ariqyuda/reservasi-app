@@ -142,7 +142,7 @@ func (tkn *TokenRepo) SendEmailActivation(email string) error {
 	mailer.SetHeader("Subject", "Token Aktivasi Email")
 
 	// kirim link aktivasi email
-	mailer.SetBody("text/html", "Klik link berikut untuk aktivasi email anda <a href='http://localhost:3080/verify/?userid/"+userId+"?token="+token+"'>Aktivasi Email</a>")
+	mailer.SetBody("text/html", "Klik link berikut untuk aktivasi email anda <a href='http://localhost:3080/verify/?userid="+userId+"&token="+token+"'>Aktivasi Email</a>")
 
 	dialer := gomail.NewDialer(
 		"smtp.gmail.com",
