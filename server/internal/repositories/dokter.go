@@ -43,7 +43,7 @@ func (d *DokterRepo) FetchDokter() ([]model.Dokter, error) {
 	return dokter, nil
 }
 
-func (d *DokterRepo) InsertDokter(email, nama, password, str_dokter, sip_dokter, poli_nama, status_dokter string) error {
+func (d *DokterRepo) InsertDokter(email, nama, password, str_dokter, sip_dokter, status_dokter, poli_nama string) error {
 	role := "dokter"
 	status := "aktif"
 

@@ -62,7 +62,6 @@ func NewAPI(usersRepo repositories.UserRepo, authRepo repositories.AuthRepo, dok
 	mux.Handle("/api/petugas/insert/dokter", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.insertDokter)))))
 	mux.Handle("/api/petugas/insert/jadwal", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.insertJadwalDokter)))))
 	mux.Handle("/api/petugas/fetch/dokter", api.GET(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.fetchDokter)))))
-	mux.Handle("/api/petugas/ubah/data/dokter", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.ubahDataDokter)))))
 	mux.Handle("/api/petugas/lihat/poli", api.GET(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.lihatPoli)))))
 	mux.Handle("/api/petugas/lihat/poli/dokter", api.GET(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.lihatDokter)))))
 	mux.Handle("/api/petugas/lihat/poli/dokter/jadwal", api.GET(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.lihatJadwalDokter)))))
@@ -73,12 +72,13 @@ func NewAPI(usersRepo repositories.UserRepo, authRepo repositories.AuthRepo, dok
 	mux.Handle("/api/petugas/ubah/poli", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.ubahPoli)))))
 	mux.Handle("/api/petugas/ubah/jadwal", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.ubahJadwalDokter)))))
 	mux.Handle("/api/petugas/laporan", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.kirimDataLaporan)))))
-	mux.Handle("/api/petugas/ganti/status/dokter", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.ubahStatusDokter)))))
 
 	// API admin with middleware
 	mux.Handle("/api/admin/lihat/data/user", api.GET(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.lihatDataUser)))))
 	mux.Handle("/api/admin/lihat/data/dokter", api.GET(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.lihatDataDokter)))))
 	mux.Handle("/api/admin/insert/petugas", api.POST(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.insertPetugas)))))
+	mux.Handle("/api/admin/ubah/data/dokter", api.POST(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.ubahDataDokter)))))
+	mux.Handle("/api/admin/ganti/status/dokter", api.POST(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.ubahStatusDokter)))))
 
 	return api
 }
