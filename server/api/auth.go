@@ -254,7 +254,7 @@ func (api *API) resetPassword(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.authRepo.ResetPassword(password.Email, password.Token, password.PasswordBaru)
+	err = api.authRepo.ResetPassword(password.UserID, password.Token, password.PasswordBaru)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})

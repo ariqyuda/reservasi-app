@@ -64,13 +64,16 @@ func (tkn *TokenRepo) SendTokenForgetPassword(email string) error {
 		return err
 	}
 
+	userId := strconv.FormatInt(int64(*user_id), 10)
+
 	// kirim email token ke user
 	mailer := gomail.NewMessage()
 	mailer.SetHeader("From", "API Test")
 	mailer.SetHeader("To", email)
 	mailer.SetHeader("Subject", "Token Reset Password")
 
-	mailer.SetBody("text/plain", "Token reset password anda adalah "+token)
+	// kirim token reset password
+	mailer.SetBody("text/html", "Klik link berikut untuk reset password anda <a href='http://localhost:3000/reset-password/?userid="+userId+"&token="+token+"'>Reset Password</a>")
 
 	dialer := gomail.NewDialer(
 		"smtp.gmail.com",

@@ -139,13 +139,10 @@ func (u *AuthRepo) UbahPassword(id_user int64, password_lama, password_baru stri
 	return errors.New("password lama tidak sesuai")
 }
 
-func (u *AuthRepo) ResetPassword(email, input_token, password_baru string) error {
-
-	userRepo := NewUserRepositories(u.db)
-	id_user, _ := userRepo.FetchUserID(email)
+func (u *AuthRepo) ResetPassword(id_user int64, input_token, password_baru string) error {
 
 	tokenRepo := NewTokenRepository(u.db)
-	token, err := tokenRepo.TokenForgetPassword(*id_user)
+	token, err := tokenRepo.TokenForgetPassword(id_user)
 
 	if err != nil {
 		return err
@@ -165,7 +162,7 @@ func (u *AuthRepo) ResetPassword(email, input_token, password_baru string) error
 		return errors.New("gagal mengubah password")
 	}
 
-	_ = tokenRepo.ChangeStatusToken(*id_user, token)
+	_ = tokenRepo.ChangeStatusToken(id_user, token)
 
 	return nil
 }

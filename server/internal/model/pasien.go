@@ -5,6 +5,7 @@ import "time"
 type Pasien struct {
 	ID          int64     `db:"id"`
 	User_ID     int64     `db:"user_id"`
+	Email       string    `db:"email"`
 	NIK         string    `db:"nik_pasien"`
 	Nama        string    `db:"nama"`
 	Gender      string    `db:"jk_pasien"`

@@ -51,6 +51,26 @@ func (api *API) lihatDataUser(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(fetchUserResponse)
 }
 
+func (api *API) lihatDataPasien(w http.ResponseWriter, req *http.Request) {
+	api.AllowOrigin(w, req)
+
+	pasienData, err := api.usersRepo.FetchDataPasien()
+	encoder := json.NewEncoder(w)
+	w.Header().Set("Content-Type", "application/json")
+	defer func() {
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			encoder.Encode(ReservasiErrorResponse{Error: err.Error()})
+		}
+	}()
+	fetchUserResponse := FetchUserSuccessResponse{
+		Message: "success",
+		Data:    pasienData,
+	}
+
+	json.NewEncoder(w).Encode(fetchUserResponse)
+}
+
 func (api *API) lihatDataDokter(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 

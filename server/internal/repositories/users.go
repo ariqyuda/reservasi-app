@@ -89,7 +89,7 @@ func (u *UserRepo) FetchPasienID(user_id int64) (*int64, error) {
 func (u *UserRepo) FetchDataDokter() ([]model.Dokter, error) {
 	var user []model.Dokter = make([]model.Dokter, 0)
 
-	var sqlStmt string = `SELECT u.id, u.email, u.nama, p.nama
+	var sqlStmt string = `SELECT u.id, u.email, u.nama, d.str_dokter, d.sip_dokter ,p.nama
 	FROM users u
 	JOIN dokter d ON u.id = d.user_id
 	JOIN poli p ON d.poli_id = p.id`
@@ -107,6 +107,8 @@ func (u *UserRepo) FetchDataDokter() ([]model.Dokter, error) {
 			&dataDokter.UserID,
 			&dataDokter.Email,
 			&dataDokter.Nama,
+			&dataDokter.STRDokter,
+			&dataDokter.SIPDokter,
 			&dataDokter.PoliName,
 		)
 
@@ -115,6 +117,39 @@ func (u *UserRepo) FetchDataDokter() ([]model.Dokter, error) {
 		}
 
 		user = append(user, dataDokter)
+	}
+
+	return user, nil
+}
+
+func (u *UserRepo) FetchDataPasien() ([]model.Pasien, error) {
+	var user []model.Pasien = make([]model.Pasien, 0)
+
+	var sqlStmt string = `SELECT u.id, u.email, u.nama, p.nik_pasien
+	FROM users u
+	JOIN pasien p ON u.id = p.user_id`
+
+	rows, err := u.db.Query(sqlStmt)
+	if err != nil {
+		return nil, errors.New("gagal menampilkan data user")
+	}
+
+	defer rows.Close()
+
+	var dataUser model.Pasien
+	for rows.Next() {
+		err := rows.Scan(
+			&dataUser.ID,
+			&dataUser.Email,
+			&dataUser.Nama,
+			&dataUser.NIK,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		user = append(user, dataUser)
 	}
 
 	return user, nil
