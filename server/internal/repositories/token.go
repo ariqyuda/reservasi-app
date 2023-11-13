@@ -68,12 +68,12 @@ func (tkn *TokenRepo) SendTokenForgetPassword(email string) error {
 
 	// kirim email token ke user
 	mailer := gomail.NewMessage()
-	mailer.SetHeader("From", "API Test")
+	mailer.SetHeader("From", "apitest481@gmail.com")
 	mailer.SetHeader("To", email)
 	mailer.SetHeader("Subject", "Token Reset Password")
 
 	// kirim token reset password
-	mailer.SetBody("text/html", "Klik link berikut untuk reset password anda <a href='http://localhost:3000/reset-password/?userid="+userId+"&token="+token+"'>Reset Password</a>")
+	mailer.SetBody("text/html", "Klik link berikut untuk reset password anda <a href='http://localhost:3000/reset-password?userid="+userId+"&token="+token+"'>Reset Password</a>")
 
 	dialer := gomail.NewDialer(
 		"smtp.gmail.com",
@@ -145,7 +145,7 @@ func (tkn *TokenRepo) SendEmailActivation(email string) error {
 	mailer.SetHeader("Subject", "Token Aktivasi Email")
 
 	// kirim link aktivasi email
-	mailer.SetBody("text/html", "Klik link berikut untuk aktivasi email anda <a href='http://localhost:3000/verify/?userid="+userId+"&token="+token+"'>Aktivasi Email</a>")
+	mailer.SetBody("text/html", "Klik link berikut untuk aktivasi email anda <a href='http://localhost:3000/verify?userid="+userId+"&token="+token+"'>Aktivasi Email</a>")
 
 	dialer := gomail.NewDialer(
 		"smtp.gmail.com",
