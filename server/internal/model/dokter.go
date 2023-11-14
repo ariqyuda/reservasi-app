@@ -9,6 +9,7 @@ type Dokter struct {
 	Nama      string    `db:"nama_dokter"`
 	STRDokter string    `db:"str_dokter"`
 	SIPDokter string    `db:"sip_dokter"`
+	Status    string    `db:"status"`
 	PoliID    int64     `db:"poli_id"`
 	PoliName  string    `db:"nama_poli"`
 	CreatedAt time.Time `db:"created_at"`

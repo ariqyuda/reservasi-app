@@ -89,7 +89,7 @@ func (u *UserRepo) FetchPasienID(user_id int64) (*int64, error) {
 func (u *UserRepo) FetchDataDokter() ([]model.Dokter, error) {
 	var user []model.Dokter = make([]model.Dokter, 0)
 
-	var sqlStmt string = `SELECT u.id, u.email, u.nama, d.str_dokter, d.sip_dokter ,p.nama
+	var sqlStmt string = `SELECT u.id, u.email, u.nama, d.str_dokter, d.sip_dokter, d.status, p.nama
 	FROM users u
 	JOIN dokter d ON u.id = d.user_id
 	JOIN poli p ON d.poli_id = p.id`
@@ -109,6 +109,7 @@ func (u *UserRepo) FetchDataDokter() ([]model.Dokter, error) {
 			&dataDokter.Nama,
 			&dataDokter.STRDokter,
 			&dataDokter.SIPDokter,
+			&dataDokter.Status,
 			&dataDokter.PoliName,
 		)
 
