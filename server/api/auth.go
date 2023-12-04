@@ -76,7 +76,7 @@ func (api *API) register(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.authRepo.Register(pasien.Email, pasien.Nama, pasien.Password, pasien.NIK, pasien.Gender, pasien.BornDate, pasien.BornPlace, pasien.Adress, pasien.PhoneNumber, pasien.KTP)
+	err = api.usersRepo.Register(pasien.Email, pasien.Nama, pasien.Password, pasien.NIK, pasien.Gender, pasien.BornDate, pasien.BornPlace, pasien.Adress, pasien.PhoneNumber, pasien.KTP)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
@@ -112,7 +112,7 @@ func (api *API) login(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	res, err := api.authRepo.Login(user.Email, user.Password)
+	res, err := api.usersRepo.Login(user.Email, user.Password)
 
 	w.Header().Set("Content-Type", "application/json")
 	encoder := json.NewEncoder(w)
@@ -204,7 +204,7 @@ func (api *API) ubahPassword(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.authRepo.UbahPassword(userID, password.PasswordLama, password.PasswordBaru)
+	err = api.usersRepo.UbahPassword(userID, password.PasswordLama, password.PasswordBaru)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
@@ -254,7 +254,7 @@ func (api *API) resetPassword(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.authRepo.ResetPassword(password.UserID, password.Token, password.PasswordBaru)
+	err = api.usersRepo.ResetPassword(password.UserID, password.Token, password.PasswordBaru)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
@@ -304,7 +304,7 @@ func (api *API) emailActivation(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.authRepo.EmailActivation(password.UserID, password.Token)
+	err = api.usersRepo.EmailActivation(password.UserID, password.Token)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})

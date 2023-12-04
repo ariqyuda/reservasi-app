@@ -4,8 +4,13 @@ import (
 	"database/sql"
 	"errors"
 	"strings"
-	"tugas-akhir/internal/model"
 )
+
+type Poli struct {
+	ID   int64  `db:"id"`
+	Name string `db:"nama_poli"`
+	Slug string `db:"slug"`
+}
 
 type PoliRepo struct {
 	db *sql.DB
@@ -39,8 +44,8 @@ func (p *PoliRepo) FetchPoliIDBySlug(slug string) (*int64, error) {
 	return &id, err
 }
 
-func (p *PoliRepo) FetchPoli() ([]model.Poli, error) {
-	var poli []model.Poli = make([]model.Poli, 0)
+func (p *PoliRepo) FetchPoli() ([]Poli, error) {
+	var poli []Poli = make([]Poli, 0)
 
 	var sqlStmt string = `SELECT id, nama, slug FROM poli`
 
@@ -51,7 +56,7 @@ func (p *PoliRepo) FetchPoli() ([]model.Poli, error) {
 
 	defer rows.Close()
 
-	var dataPoli model.Poli
+	var dataPoli Poli
 	for rows.Next() {
 		err := rows.Scan(
 			&dataPoli.ID,
@@ -91,8 +96,8 @@ func (p *PoliRepo) FetchPoliNameBySlug(slug string) (string, error) {
 	return poliName, err
 }
 
-func (p *PoliRepo) FetchPoliByNama(nama_poli string) (model.Poli, error) {
-	var poli model.Poli
+func (p *PoliRepo) FetchPoliByNama(nama_poli string) (Poli, error) {
+	var poli Poli
 
 	var sqlStmt string = `SELECT nama FROM poli WHERE nama LIKE ?`
 

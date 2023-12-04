@@ -15,7 +15,7 @@ func (api *API) lihatJadwalReservasi(w http.ResponseWriter, req *http.Request) {
 
 	userID := req.Context().Value("id").(int64)
 
-	reservasi, err := api.jadwalRepo.LihatJadwal(userID)
+	reservasi, err := api.reservasiRepo.LihatJadwalReservasi(userID)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {

@@ -15,7 +15,6 @@ func main() {
 	}
 
 	usersRepo := repositories.NewUserRepositories(db)
-	authRepo := repositories.NewAuthRepositories(db)
 	dokterRepo := repositories.NewDokterRepositories(db)
 	pasienRepo := repositories.NewPasienRepositories(db)
 	petugasRepo := repositories.NewPetugasRepositories(db)
@@ -23,9 +22,8 @@ func main() {
 	jadwalRepo := repositories.NewJadwalRepositories(db)
 	poliRepo := repositories.NewPoliRepositories(db)
 	reservasiRepo := repositories.NewReservasiRepositories(db)
-	laporanRepo := repositories.NewLaporanRepositories(db)
 	tokenRepo := repositories.NewTokenRepository(db)
 
-	mainAPI := api.NewAPI(*usersRepo, *authRepo, *dokterRepo, *pasienRepo, *petugasRepo, *timeRepo, *jadwalRepo, *poliRepo, *reservasiRepo, *laporanRepo, *tokenRepo)
+	mainAPI := api.NewAPI(*usersRepo, *dokterRepo, *pasienRepo, *petugasRepo, *timeRepo, *jadwalRepo, *poliRepo, *reservasiRepo, *tokenRepo)
 	mainAPI.Start()
 }

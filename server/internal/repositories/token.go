@@ -5,10 +5,17 @@ import (
 	"errors"
 	"math/rand"
 	"strconv"
-	"tugas-akhir/internal/model"
 
 	"gopkg.in/gomail.v2"
 )
+
+type Token struct {
+	ID        int64  `db:"id"`
+	UserID    int64  `db:"user_id"`
+	Token     string `db:"token"`
+	Fungsi    string `db:"fungsi"`
+	StatusTkn string `db:"status_tkn"`
+}
 
 type TokenRepo struct {
 	db *sql.DB
@@ -100,7 +107,7 @@ func (tkn *TokenRepo) TokenForgetPassword(id_user int64) (string, error) {
 	row := tkn.db.QueryRow(sqlStmt, id_user)
 
 	var token string
-	var tokenModel model.Token
+	var tokenModel Token
 	err := row.Scan(
 		&tokenModel.Token,
 		&tokenModel.StatusTkn,
@@ -172,7 +179,7 @@ func (tkn *TokenRepo) TokenEmailActivation(id_user int64) (string, error) {
 	row := tkn.db.QueryRow(sqlStmt, id_user)
 
 	var token string
-	var tokenModel model.Token
+	var tokenModel Token
 	err := row.Scan(
 		&tokenModel.Token,
 		&tokenModel.StatusTkn,

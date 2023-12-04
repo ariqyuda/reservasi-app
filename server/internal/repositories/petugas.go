@@ -1,6 +1,9 @@
 package repositories
 
-import "database/sql"
+import (
+	"database/sql"
+	"errors"
+)
 
 type PetugasRepo struct {
 	db *sql.DB
@@ -11,6 +14,11 @@ func NewPetugasRepositories(db *sql.DB) *PetugasRepo {
 }
 
 func (prs *PetugasRepo) InsertPetugas(email, nama, password string) error {
+
+	// check input
+	if email == "" || nama == "" || password == "" {
+		return errors.New("input tidak boleh kosong")
+	}
 
 	role := "petugas"
 	status := "aktif"

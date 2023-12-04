@@ -3,8 +3,15 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"tugas-akhir/internal/model"
 )
+
+type Jadwal struct {
+	ID          int64  `db:"id"`
+	Dokter_ID   int64  `db:"dokter_id"`
+	NamaDokter  string `db:"nama_dokter"`
+	JadwalHari  string `json:"jadwal_hari"`
+	JadwalWaktu string `json:"jadwal_waktu"`
+}
 
 type JadwalRepo struct {
 	db *sql.DB
@@ -15,6 +22,11 @@ func NewJadwalRepositories(db *sql.DB) *JadwalRepo {
 }
 
 func (j *JadwalRepo) InsertJadwal(id_dokter int64, jadwal_hari, jadwal_mulai, jadwal_berakhir string) error {
+
+	// check input
+	if jadwal_hari == "" || jadwal_mulai == "" || jadwal_berakhir == "" {
+		return errors.New("input tidak boleh kosong")
+	}
 
 	jadwal_waktu := jadwal_mulai + " - " + jadwal_berakhir
 
@@ -31,8 +43,8 @@ func (j *JadwalRepo) InsertJadwal(id_dokter int64, jadwal_hari, jadwal_mulai, ja
 	return err
 }
 
-func (j *JadwalRepo) FetchJadwalDokter() ([]model.Jadwal, error) {
-	var jadwal []model.Jadwal = make([]model.Jadwal, 0)
+func (j *JadwalRepo) FetchJadwalDokter() ([]Jadwal, error) {
+	var jadwal []Jadwal = make([]Jadwal, 0)
 
 	var sqlStmt string = `SELECT j.id, d.id, d.nama, j.jadwal_hari, j.jadwal_waktu
 		FROM dokter d
@@ -45,7 +57,7 @@ func (j *JadwalRepo) FetchJadwalDokter() ([]model.Jadwal, error) {
 
 	defer rows.Close()
 
-	var dataJadwal model.Jadwal
+	var dataJadwal Jadwal
 	for rows.Next() {
 		err := rows.Scan(
 			&dataJadwal.ID,
@@ -65,8 +77,8 @@ func (j *JadwalRepo) FetchJadwalDokter() ([]model.Jadwal, error) {
 	return jadwal, nil
 }
 
-func (j *JadwalRepo) FetchJadwalDokterByID(dokter_id int64) (model.Jadwal, error) {
-	var jadwal model.Jadwal
+func (j *JadwalRepo) FetchJadwalDokterByID(dokter_id int64) (Jadwal, error) {
+	var jadwal Jadwal
 
 	var sqlStmt string = `SELECT j.id, d.id, d.nama, j.jadwal_hari, j.jadwal_waktu
 		FROM dokter d
@@ -108,8 +120,8 @@ func (j *JadwalRepo) UbahJadwalDokter(reservasi_id int64, jadwal_hari, jadwal_mu
 	return err
 }
 
-func (j *JadwalRepo) FetchJadwalDokterByDokterID(dokter_id int64) ([]model.Jadwal, error) {
-	var jadwal []model.Jadwal = make([]model.Jadwal, 0)
+func (j *JadwalRepo) FetchJadwalDokterByDokterID(dokter_id int64) ([]Jadwal, error) {
+	var jadwal []Jadwal = make([]Jadwal, 0)
 
 	var sqlStmt string = `SELECT j.id, j.jadwal_hari, j.jadwal_waktu
 		FROM dokter d
@@ -123,7 +135,7 @@ func (j *JadwalRepo) FetchJadwalDokterByDokterID(dokter_id int64) ([]model.Jadwa
 
 	defer rows.Close()
 
-	var dataJadwal model.Jadwal
+	var dataJadwal Jadwal
 	for rows.Next() {
 		err := rows.Scan(
 			&dataJadwal.ID,
@@ -141,8 +153,8 @@ func (j *JadwalRepo) FetchJadwalDokterByDokterID(dokter_id int64) ([]model.Jadwa
 	return jadwal, nil
 }
 
-func (j *JadwalRepo) FetchJadwalByID(id int64) (model.Jadwal, error) {
-	var jadwal model.Jadwal
+func (j *JadwalRepo) FetchJadwalByID(id int64) (Jadwal, error) {
+	var jadwal Jadwal
 
 	var sqlStmt string = `SELECT dokter_id, jadwal_hari, jadwal_waktu FROM jadwal_dokter WHERE id = ?`
 
@@ -154,40 +166,4 @@ func (j *JadwalRepo) FetchJadwalByID(id int64) (model.Jadwal, error) {
 	)
 
 	return jadwal, err
-}
-
-func (j *JadwalRepo) LihatJadwal(user_id int64) ([]model.Reservasi, error) {
-	var reservasi []model.Reservasi = make([]model.Reservasi, 0)
-
-	var sqlStmt string = `SELECT p.nama, r.jadwal_tanggal, r.jadwal_hari, r.jadwal_waktu, r.keluhan
-	FROM reservasi r
-	JOIN dokter d ON r.dokter_id = d.id
-	JOIN pasien p ON r.user_id = p.user_id
-	WHERE d.user_id = ? AND r.status = 'disetujui'`
-
-	rows, err := j.db.Query(sqlStmt, user_id)
-	if err != nil {
-		return nil, errors.New("gagal menampilkan jadwal")
-	}
-
-	defer rows.Close()
-
-	var dataReservasi model.Reservasi
-	for rows.Next() {
-		err := rows.Scan(
-			&dataReservasi.PasienName,
-			&dataReservasi.Tanggal,
-			&dataReservasi.Hari,
-			&dataReservasi.Waktu,
-			&dataReservasi.Keluhan,
-		)
-
-		if err != nil {
-			return nil, err
-		}
-
-		reservasi = append(reservasi, dataReservasi)
-	}
-
-	return reservasi, nil
 }

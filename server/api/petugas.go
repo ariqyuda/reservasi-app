@@ -264,7 +264,7 @@ func (api *API) verifikasiReservasi(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.petugasRepo.VerifikasiReservasi(bodyRequest.ID, bodyRequest.Status, bodyRequest.AlasanVerifikasi)
+	err = api.reservasiRepo.VerifikasiReservasi(bodyRequest.ID, bodyRequest.Status, bodyRequest.AlasanVerifikasi)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
@@ -289,7 +289,7 @@ func (api *API) kirimDataLaporan(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	reservasi, err := api.laporanRepo.KirimDataLaporan(bodyRequest.WaktuAwal, bodyRequest.WaktuAkhir)
+	reservasi, err := api.reservasiRepo.DataLaporanReservasi(bodyRequest.WaktuAwal, bodyRequest.WaktuAkhir)
 
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -369,7 +369,7 @@ func (api *API) reservasiPasien(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.petugasRepo.ReservasiPasien(int64(userID), reservasi.JadwalID, reservasi.Jadwal_Tanggal, reservasi.NIK, reservasi.Nama, reservasi.Gender,
+	err = api.reservasiRepo.ReservasiPasien(int64(userID), reservasi.JadwalID, reservasi.Jadwal_Tanggal, reservasi.NIK, reservasi.Nama, reservasi.Gender,
 		reservasi.BornDate, reservasi.BornPlace, reservasi.Adress, reservasi.PhoneNumber, reservasi.Keluhan)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

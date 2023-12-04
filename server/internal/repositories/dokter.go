@@ -3,8 +3,19 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"tugas-akhir/internal/model"
 )
+
+type Dokter struct {
+	ID        int64  `db:"id"`
+	UserID    int64  `db:"user_id"`
+	Email     string `db:"email"`
+	Nama      string `db:"nama_dokter"`
+	STRDokter string `db:"str_dokter"`
+	SIPDokter string `db:"sip_dokter"`
+	Status    string `db:"status"`
+	PoliID    int64  `db:"poli_id"`
+	PoliNama  string `db:"nama_poli"`
+}
 
 type DokterRepo struct {
 	db *sql.DB
@@ -14,8 +25,8 @@ func NewDokterRepositories(db *sql.DB) *DokterRepo {
 	return &DokterRepo{db: db}
 }
 
-func (d *DokterRepo) FetchDokter() ([]model.Dokter, error) {
-	var dokter []model.Dokter = make([]model.Dokter, 0)
+func (d *DokterRepo) FetchDokter() ([]Dokter, error) {
+	var dokter []Dokter = make([]Dokter, 0)
 
 	var sqlStmt = `SELECT id, nama FROM dokter`
 
@@ -26,7 +37,7 @@ func (d *DokterRepo) FetchDokter() ([]model.Dokter, error) {
 
 	defer rows.Close()
 
-	var dataDokter model.Dokter
+	var dataDokter Dokter
 	for rows.Next() {
 		err := rows.Scan(
 			&dataDokter.ID,
@@ -72,8 +83,8 @@ func (d *DokterRepo) InsertDokter(email, nama, password, str_dokter, sip_dokter,
 	return err
 }
 
-func (d *DokterRepo) FetchDokterByPoliNama(slug string) ([]model.Dokter, error) {
-	var dokter []model.Dokter = make([]model.Dokter, 0)
+func (d *DokterRepo) FetchDokterByPoliNama(slug string) ([]Dokter, error) {
+	var dokter []Dokter = make([]Dokter, 0)
 
 	poliRepo := NewPoliRepositories(d.db)
 
@@ -91,12 +102,12 @@ func (d *DokterRepo) FetchDokterByPoliNama(slug string) ([]model.Dokter, error) 
 
 	defer rows.Close()
 
-	var dataDokter model.Dokter
+	var dataDokter Dokter
 	for rows.Next() {
 		err := rows.Scan(
 			&dataDokter.ID,
 			&dataDokter.Nama,
-			&dataDokter.PoliName,
+			&dataDokter.PoliNama,
 		)
 
 		if err != nil {
@@ -109,8 +120,45 @@ func (d *DokterRepo) FetchDokterByPoliNama(slug string) ([]model.Dokter, error) 
 	return dokter, nil
 }
 
-func (d *DokterRepo) FetchDokterByID(dokter_id int64) (model.Dokter, error) {
-	var dokter model.Dokter
+func (u *DokterRepo) FetchDataDokter() ([]Dokter, error) {
+	var user []Dokter = make([]Dokter, 0)
+
+	var sqlStmt string = `SELECT u.id, u.email, u.nama, d.str_dokter, d.sip_dokter, d.status, p.nama
+	FROM users u
+	JOIN dokter d ON u.id = d.user_id
+	JOIN poli p ON d.poli_id = p.id`
+
+	rows, err := u.db.Query(sqlStmt)
+	if err != nil {
+		return nil, errors.New("gagal menampilkan data user")
+	}
+
+	defer rows.Close()
+
+	var dataDokter Dokter
+	for rows.Next() {
+		err := rows.Scan(
+			&dataDokter.UserID,
+			&dataDokter.Email,
+			&dataDokter.Nama,
+			&dataDokter.STRDokter,
+			&dataDokter.SIPDokter,
+			&dataDokter.Status,
+			&dataDokter.PoliNama,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		user = append(user, dataDokter)
+	}
+
+	return user, nil
+}
+
+func (d *DokterRepo) FetchDokterByID(dokter_id int64) (Dokter, error) {
+	var dokter Dokter
 
 	var sqlStmt string = `SELECT id, nama, poli_id FROM dokter WHERE id = ?`
 

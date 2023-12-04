@@ -54,7 +54,7 @@ func (api *API) lihatDataUser(w http.ResponseWriter, req *http.Request) {
 func (api *API) lihatDataPasien(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	pasienData, err := api.usersRepo.FetchDataPasien()
+	pasienData, err := api.pasienRepo.FetchDataPasien()
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -74,7 +74,7 @@ func (api *API) lihatDataPasien(w http.ResponseWriter, req *http.Request) {
 func (api *API) lihatDataDokter(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	dokterData, err := api.usersRepo.FetchDataDokter()
+	dokterData, err := api.dokterRepo.FetchDataDokter()
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
