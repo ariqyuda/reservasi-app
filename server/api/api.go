@@ -69,7 +69,7 @@ func NewAPI(usersRepo repositories.UserRepo, dokterRepo repositories.DokterRepo,
 	mux.Handle("/api/petugas/verifikasi/reservasi", api.PUT(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.verifikasiReservasi)))))
 	mux.Handle("/api/petugas/ubah/poli", api.PUT(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.ubahPoli)))))
 	mux.Handle("/api/petugas/ubah/jadwal", api.PUT(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.ubahJadwalDokter)))))
-	mux.Handle("/api/petugas/laporan", api.POST(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.kirimDataLaporan)))))
+	mux.Handle("/api/petugas/laporan", api.GET(api.AuthMiddleWare(api.PetugasMiddleware(http.HandlerFunc(api.kirimDataLaporan)))))
 
 	// API admin with middleware
 	mux.Handle("/api/admin/lihat/data/user", api.GET(api.AuthMiddleWare(api.AdminMiddleware(http.HandlerFunc(api.lihatDataUser)))))

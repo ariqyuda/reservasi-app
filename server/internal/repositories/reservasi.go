@@ -243,9 +243,9 @@ func (r *ReservasiRepo) DataLaporanReservasi(tanggal_awal, tanggal_akhir string)
 	JOIN dokter d ON r.dokter_id = d.id
 	JOIN poli p ON r.poli_id = p.id
 	JOIN pasien ps ON r.user_id = ps.user_id
-	WHERE status = ?
+	WHERE r.status = ?
 	AND 
-	jadwal_tanggal BETWEEN ? AND ?`
+	r.jadwal_tanggal BETWEEN ? AND ?`
 
 	rows, err := r.db.Query(sqlStmt, status, tanggal_awal, tanggal_akhir)
 	if err != nil {

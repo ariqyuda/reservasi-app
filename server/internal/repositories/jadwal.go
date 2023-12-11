@@ -102,7 +102,7 @@ func (j *JadwalRepo) FetchJadwalDokterByID(dokter_id int64) (Jadwal, error) {
 	return jadwal, nil
 }
 
-func (j *JadwalRepo) UbahJadwalDokter(reservasi_id int64, jadwal_hari, jadwal_mulai, jadwal_berakhir string) error {
+func (j *JadwalRepo) UbahJadwalDokter(jadwal_id int64, jadwal_hari, jadwal_mulai, jadwal_berakhir string) error {
 
 	jadwal_waktu := jadwal_mulai + " - " + jadwal_berakhir
 
@@ -111,7 +111,7 @@ func (j *JadwalRepo) UbahJadwalDokter(reservasi_id int64, jadwal_hari, jadwal_mu
 	timeRepo := NewTimeRepositories(j.db)
 	waktuLokal, _ := timeRepo.SetLocalTime()
 
-	_, err := j.db.Exec(sqlStmt, jadwal_hari, jadwal_waktu, waktuLokal, reservasi_id)
+	_, err := j.db.Exec(sqlStmt, jadwal_hari, jadwal_waktu, waktuLokal, jadwal_id)
 
 	if err != nil {
 		return err

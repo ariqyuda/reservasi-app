@@ -33,7 +33,7 @@ type UbahPoli struct {
 }
 
 type UbahJadwalDokter struct {
-	ReservasiID   int64  `json:"id"`
+	JadwalID      int64  `json:"id"`
 	Hari          string `json:"jadwal_hari"`
 	WaktuMulai    string `json:"jadwal_mulai"`
 	WaktuBerakhir string `json:"jadwal_berakhir"`
@@ -342,7 +342,7 @@ func (api *API) ubahJadwalDokter(w http.ResponseWriter, req *http.Request) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = api.jadwalRepo.UbahJadwalDokter(bodyRequest.ReservasiID, bodyRequest.Hari, bodyRequest.WaktuMulai, bodyRequest.WaktuBerakhir)
+	err = api.jadwalRepo.UbahJadwalDokter(bodyRequest.JadwalID, bodyRequest.Hari, bodyRequest.WaktuMulai, bodyRequest.WaktuBerakhir)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		encoder.Encode(AuthErrorResponse{Error: err.Error()})
