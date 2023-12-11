@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 type Poli struct {
@@ -196,7 +197,9 @@ func (api *API) insertJadwalDokter(w http.ResponseWriter, req *http.Request) {
 func (api *API) fetchDokter(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	dokter, err := api.dokterRepo.FetchDokter()
+	page, err := strconv.Atoi(req.URL.Query().Get("page"))
+
+	dokter, err := api.dokterRepo.FetchDokter(page)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -216,7 +219,9 @@ func (api *API) fetchDokter(w http.ResponseWriter, req *http.Request) {
 func (api *API) fetchJadwalDokter(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	reservasi, err := api.jadwalRepo.FetchJadwalDokter()
+	page, err := strconv.Atoi(req.URL.Query().Get("page"))
+
+	reservasi, err := api.jadwalRepo.FetchJadwalDokter(page)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -236,7 +241,9 @@ func (api *API) fetchJadwalDokter(w http.ResponseWriter, req *http.Request) {
 func (api *API) lihatReservasiUser(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	reservasi, err := api.reservasiRepo.LihatReservasi()
+	page, err := strconv.Atoi(req.URL.Query().Get("page"))
+
+	reservasi, err := api.reservasiRepo.LihatReservasi(page)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {

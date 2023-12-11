@@ -44,12 +44,14 @@ func (p *PoliRepo) FetchPoliIDBySlug(slug string) (*int64, error) {
 	return &id, err
 }
 
-func (p *PoliRepo) FetchPoli() ([]Poli, error) {
+func (p *PoliRepo) FetchPoli(page int) ([]Poli, error) {
 	var poli []Poli = make([]Poli, 0)
 
-	var sqlStmt string = `SELECT id, nama, slug FROM poli`
+	offSet := (page - 1) * 10
 
-	rows, err := p.db.Query(sqlStmt)
+	var sqlStmt string = `SELECT id, nama, slug FROM poli LIMIT 10 OFFSET ?`
+
+	rows, err := p.db.Query(sqlStmt, offSet)
 	if err != nil {
 		return nil, errors.New("gagal menampilkan poli")
 	}

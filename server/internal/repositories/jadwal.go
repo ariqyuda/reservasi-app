@@ -43,14 +43,17 @@ func (j *JadwalRepo) InsertJadwal(id_dokter int64, jadwal_hari, jadwal_mulai, ja
 	return err
 }
 
-func (j *JadwalRepo) FetchJadwalDokter() ([]Jadwal, error) {
+func (j *JadwalRepo) FetchJadwalDokter(page int) ([]Jadwal, error) {
 	var jadwal []Jadwal = make([]Jadwal, 0)
+
+	offSet := (page - 1) * 10
 
 	var sqlStmt string = `SELECT j.id, d.id, d.nama, j.jadwal_hari, j.jadwal_waktu
 		FROM dokter d
-		JOIN jadwal_dokter j ON d.id = j.dokter_id`
+		JOIN jadwal_dokter j ON d.id = j.dokter_id
+		LIMIT 10 OFFSET ?`
 
-	rows, err := j.db.Query(sqlStmt)
+	rows, err := j.db.Query(sqlStmt, offSet)
 	if err != nil {
 		return nil, errors.New("gagal menampilkan dokter")
 	}
@@ -120,15 +123,18 @@ func (j *JadwalRepo) UbahJadwalDokter(jadwal_id int64, jadwal_hari, jadwal_mulai
 	return err
 }
 
-func (j *JadwalRepo) FetchJadwalDokterByDokterID(dokter_id int64) ([]Jadwal, error) {
+func (j *JadwalRepo) FetchJadwalDokterByDokterID(dokter_id int64, page int) ([]Jadwal, error) {
 	var jadwal []Jadwal = make([]Jadwal, 0)
+
+	offSet := (page - 1) * 10
 
 	var sqlStmt string = `SELECT j.id, j.jadwal_hari, j.jadwal_waktu
 		FROM dokter d
 		JOIN jadwal_dokter j ON d.id = j.dokter_id
-		WHERE d.id = ?`
+		WHERE d.id = ?
+		LIMIT 10 OFFSET ?`
 
-	rows, err := j.db.Query(sqlStmt, dokter_id)
+	rows, err := j.db.Query(sqlStmt, dokter_id, offSet)
 	if err != nil {
 		return nil, errors.New("gagal menampilkan dokter")
 	}

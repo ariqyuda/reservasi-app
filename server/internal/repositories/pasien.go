@@ -65,14 +65,17 @@ func (p *PasienRepo) UbahDataDiri(user_id int64, nik, nama, gender, tgl_lahir, t
 	return err
 }
 
-func (p *PasienRepo) FetchDataPasien() ([]Pasien, error) {
+func (p *PasienRepo) FetchDataPasien(page int) ([]Pasien, error) {
 	var user []Pasien = make([]Pasien, 0)
+
+	offSet := (page - 1) * 10
 
 	var sqlStmt string = `SELECT u.id, u.email, u.nama, p.nik_pasien
 	FROM users u
-	JOIN pasien p ON u.id = p.user_id`
+	JOIN pasien p ON u.id = p.user_id
+	LIMIT 10 OFFSET ?`
 
-	rows, err := p.db.Query(sqlStmt)
+	rows, err := p.db.Query(sqlStmt, offSet)
 	if err != nil {
 		return nil, errors.New("gagal menampilkan data user")
 	}

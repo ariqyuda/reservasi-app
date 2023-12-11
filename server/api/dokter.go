@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 type DokterResponse struct {
@@ -14,8 +15,9 @@ func (api *API) lihatJadwalReservasi(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
 	userID := req.Context().Value("id").(int64)
+	page, err := strconv.Atoi(req.URL.Query().Get("page"))
 
-	reservasi, err := api.reservasiRepo.LihatJadwalReservasi(userID)
+	reservasi, err := api.reservasiRepo.LihatJadwalReservasi(userID, page)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {

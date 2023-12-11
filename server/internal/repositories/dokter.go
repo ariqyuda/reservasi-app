@@ -25,12 +25,14 @@ func NewDokterRepositories(db *sql.DB) *DokterRepo {
 	return &DokterRepo{db: db}
 }
 
-func (d *DokterRepo) FetchDokter() ([]Dokter, error) {
+func (d *DokterRepo) FetchDokter(page int) ([]Dokter, error) {
 	var dokter []Dokter = make([]Dokter, 0)
 
-	var sqlStmt = `SELECT id, nama FROM dokter`
+	offSet := (page - 1) * 10
 
-	rows, err := d.db.Query(sqlStmt)
+	var sqlStmt = `SELECT id, nama FROM dokter LIMIT 10 OFFSET ?`
+
+	rows, err := d.db.Query(sqlStmt, offSet)
 	if err != nil {
 		return nil, errors.New("gagal menampilkan dokter")
 	}
@@ -83,19 +85,22 @@ func (d *DokterRepo) InsertDokter(email, nama, password, str_dokter, sip_dokter,
 	return err
 }
 
-func (d *DokterRepo) FetchDokterByPoliNama(slug string) ([]Dokter, error) {
+func (d *DokterRepo) FetchDokterByPoliNama(slug string, page int) ([]Dokter, error) {
 	var dokter []Dokter = make([]Dokter, 0)
 
 	poliRepo := NewPoliRepositories(d.db)
 
 	poliID, _ := poliRepo.FetchPoliIDBySlug(slug)
 
+	offSet := (page - 1) * 10
+
 	var sqlStmt string = `SELECT d.id, d.nama, p.nama 
 	from dokter d
 	JOIN poli P ON d.poli_id = p.id 
-	where poli_id = ?`
+	where poli_id = ?
+	LIMIT 10 OFFSET ?`
 
-	rows, err := d.db.Query(sqlStmt, poliID)
+	rows, err := d.db.Query(sqlStmt, poliID, offSet)
 	if err != nil {
 		return nil, errors.New("gagal menampilkan dokter")
 	}
@@ -120,15 +125,18 @@ func (d *DokterRepo) FetchDokterByPoliNama(slug string) ([]Dokter, error) {
 	return dokter, nil
 }
 
-func (u *DokterRepo) FetchDataDokter() ([]Dokter, error) {
+func (u *DokterRepo) FetchDataDokter(page int) ([]Dokter, error) {
 	var user []Dokter = make([]Dokter, 0)
+
+	offSet := (page - 1) * 10
 
 	var sqlStmt string = `SELECT u.id, u.email, u.nama, d.str_dokter, d.sip_dokter, d.status, p.nama
 	FROM users u
 	JOIN dokter d ON u.id = d.user_id
-	JOIN poli p ON d.poli_id = p.id`
+	JOIN poli p ON d.poli_id = p.id
+	LIMIT 10 OFFSET ?`
 
-	rows, err := u.db.Query(sqlStmt)
+	rows, err := u.db.Query(sqlStmt, offSet)
 	if err != nil {
 		return nil, errors.New("gagal menampilkan data user")
 	}

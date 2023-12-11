@@ -92,7 +92,9 @@ func (api *API) ubahDataDiri(w http.ResponseWriter, req *http.Request) {
 func (api *API) lihatPoli(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	poli, err := api.poliRepo.FetchPoli()
+	page, err := strconv.Atoi(req.URL.Query().Get("page"))
+
+	poli, err := api.poliRepo.FetchPoli(page)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -113,8 +115,9 @@ func (api *API) lihatDokter(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
 	poli := req.URL.Query().Get("poli")
+	page, err := strconv.Atoi(req.URL.Query().Get("page"))
 
-	reservasi, err := api.dokterRepo.FetchDokterByPoliNama(poli)
+	reservasi, err := api.dokterRepo.FetchDokterByPoliNama(poli, page)
 	poliName, err := api.poliRepo.FetchPoliNameBySlug(poli)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
@@ -136,11 +139,11 @@ func (api *API) lihatDokter(w http.ResponseWriter, req *http.Request) {
 func (api *API) lihatJadwalDokter(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	id := req.URL.Query().Get("id")
-	id_dokter, err := strconv.Atoi(id)
+	id_dokter, err := strconv.Atoi(req.URL.Query().Get("id"))
+	page, err := strconv.Atoi(req.URL.Query().Get("page"))
 
 	dokter, err := api.dokterRepo.FetchDokterByID(int64(id_dokter))
-	reservasi, err := api.jadwalRepo.FetchJadwalDokterByDokterID(int64(id_dokter))
+	reservasi, err := api.jadwalRepo.FetchJadwalDokterByDokterID(int64(id_dokter), page)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {

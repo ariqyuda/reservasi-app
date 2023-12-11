@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 type AdminErrorResponse struct {
@@ -29,12 +30,12 @@ type InsertPetugasSuccessResponse struct {
 	Data    Petugas `json:"data"`
 }
 
-func (api *API) lihatDataUser(w http.ResponseWriter, req *http.Request) {
+func (api *API) lihatDataPetugas(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	userRole := req.URL.Query().Get("role")
+	page, err := strconv.Atoi(req.URL.Query().Get("page"))
 
-	userData, err := api.usersRepo.FetchDataUserByRole(userRole)
+	userData, err := api.petugasRepo.FetchDataPetugas(page)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -54,7 +55,9 @@ func (api *API) lihatDataUser(w http.ResponseWriter, req *http.Request) {
 func (api *API) lihatDataPasien(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	pasienData, err := api.pasienRepo.FetchDataPasien()
+	page, err := strconv.Atoi(req.URL.Query().Get("page"))
+
+	pasienData, err := api.pasienRepo.FetchDataPasien(page)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -74,7 +77,9 @@ func (api *API) lihatDataPasien(w http.ResponseWriter, req *http.Request) {
 func (api *API) lihatDataDokter(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	dokterData, err := api.dokterRepo.FetchDataDokter()
+	page, err := strconv.Atoi(req.URL.Query().Get("page"))
+
+	dokterData, err := api.dokterRepo.FetchDataDokter(page)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {

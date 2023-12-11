@@ -135,9 +135,11 @@ func (p *PasienRepo) FetchLatestReservasiByUserID(user_id int64) (Reservasi, err
 	return reservasi, nil
 }
 
-func (r *ReservasiRepo) LihatReservasi() ([]Reservasi, error) {
+func (r *ReservasiRepo) LihatReservasi(page int) ([]Reservasi, error) {
 	// var sqlStmt string
 	var reservasi []Reservasi = make([]Reservasi, 0)
+
+	offSet := (page - 1) * 10
 
 	var sqlStmt string = `SELECT r.id, d.nama as nama_dokter, p.nama AS poli, r.nama AS nama_pasien, r.jadwal_tanggal, r.jadwal_hari, r.jadwal_waktu, r.tipe, r.status 
 		FROM reservasi r
@@ -145,9 +147,10 @@ func (r *ReservasiRepo) LihatReservasi() ([]Reservasi, error) {
 		JOIN poli p ON r.poli_id = p.id
 		LEFT JOIN pasien ps ON r.user_id = ps.user_id
 		WHERE NOT r.status = 'Selesai'
-		ORDER BY r.created_at DESC`
+		ORDER BY r.created_at DESC
+		LIMIT 10 OFFSET ?`
 
-	rows, err := r.db.Query(sqlStmt)
+	rows, err := r.db.Query(sqlStmt, offSet)
 	if err != nil {
 		return nil, errors.New("gagal menampilkan data reservasi")
 	}
@@ -279,16 +282,20 @@ func (r *ReservasiRepo) DataLaporanReservasi(tanggal_awal, tanggal_akhir string)
 	return reservasi, nil
 }
 
-func (r *ReservasiRepo) LihatJadwalReservasi(user_id int64) ([]Reservasi, error) {
+func (r *ReservasiRepo) LihatJadwalReservasi(user_id int64, page int) ([]Reservasi, error) {
 	var reservasi []Reservasi = make([]Reservasi, 0)
+
+	offSet := (page - 1) * 10
 
 	var sqlStmt string = `SELECT p.nama, r.jadwal_tanggal, r.jadwal_hari, r.jadwal_waktu, r.keluhan
 	FROM reservasi r
 	JOIN dokter d ON r.dokter_id = d.id
 	JOIN pasien p ON r.user_id = p.user_id
-	WHERE d.user_id = ? AND r.status = 'disetujui'`
+	WHERE d.user_id = ? AND r.status = 'disetujui'
+	ORDER BY r.created_at DESC
+	LIMIT 10 OFFSET ?`
 
-	rows, err := r.db.Query(sqlStmt, user_id)
+	rows, err := r.db.Query(sqlStmt, user_id, offSet)
 	if err != nil {
 		return nil, errors.New("gagal menampilkan jadwal")
 	}
