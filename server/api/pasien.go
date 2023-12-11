@@ -92,9 +92,7 @@ func (api *API) ubahDataDiri(w http.ResponseWriter, req *http.Request) {
 func (api *API) lihatPoli(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	page, err := strconv.Atoi(req.URL.Query().Get("page"))
-
-	poli, err := api.poliRepo.FetchPoli(page)
+	poli, err := api.poliRepo.FetchPoli()
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
