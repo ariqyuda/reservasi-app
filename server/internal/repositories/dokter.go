@@ -85,22 +85,19 @@ func (d *DokterRepo) InsertDokter(email, nama, password, str_dokter, sip_dokter,
 	return err
 }
 
-func (d *DokterRepo) FetchDokterByPoliNama(slug string, page int) ([]Dokter, error) {
+func (d *DokterRepo) FetchDokterByPoliNama(slug string) ([]Dokter, error) {
 	var dokter []Dokter = make([]Dokter, 0)
 
 	poliRepo := NewPoliRepositories(d.db)
 
 	poliID, _ := poliRepo.FetchPoliIDBySlug(slug)
 
-	offSet := (page - 1) * 10
-
 	var sqlStmt string = `SELECT d.id, d.nama, p.nama 
 	from dokter d
 	JOIN poli P ON d.poli_id = p.id 
-	where poli_id = ?
-	LIMIT 10 OFFSET ?`
+	where poli_id = ?`
 
-	rows, err := d.db.Query(sqlStmt, poliID, offSet)
+	rows, err := d.db.Query(sqlStmt, poliID)
 	if err != nil {
 		return nil, errors.New("gagal menampilkan dokter")
 	}

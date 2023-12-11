@@ -113,9 +113,8 @@ func (api *API) lihatDokter(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
 	poli := req.URL.Query().Get("poli")
-	page, err := strconv.Atoi(req.URL.Query().Get("page"))
 
-	reservasi, err := api.dokterRepo.FetchDokterByPoliNama(poli, page)
+	reservasi, err := api.dokterRepo.FetchDokterByPoliNama(poli)
 	poliName, err := api.poliRepo.FetchPoliNameBySlug(poli)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
