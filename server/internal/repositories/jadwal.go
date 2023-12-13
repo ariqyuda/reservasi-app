@@ -43,8 +43,9 @@ func (j *JadwalRepo) InsertJadwal(id_dokter int64, jadwal_hari, jadwal_mulai, ja
 	return err
 }
 
-func (j *JadwalRepo) FetchJadwalDokter(page int) ([]Jadwal, error) {
+func (j *JadwalRepo) FetchJadwalDokter(page int) ([]Jadwal, Pagination, error) {
 	var jadwal []Jadwal = make([]Jadwal, 0)
+	var pagination Pagination
 
 	offSet := (page - 1) * 10
 
@@ -55,7 +56,7 @@ func (j *JadwalRepo) FetchJadwalDokter(page int) ([]Jadwal, error) {
 
 	rows, err := j.db.Query(sqlStmt, offSet)
 	if err != nil {
-		return nil, errors.New("gagal menampilkan dokter")
+		return nil, pagination, errors.New("gagal menampilkan dokter")
 	}
 
 	defer rows.Close()
@@ -71,13 +72,26 @@ func (j *JadwalRepo) FetchJadwalDokter(page int) ([]Jadwal, error) {
 		)
 
 		if err != nil {
-			return nil, err
+			return nil, pagination, err
 		}
 
 		jadwal = append(jadwal, dataJadwal)
 	}
 
-	return jadwal, nil
+	var sqlCount string = `SELECT COUNT(*) FROM jadwal_dokter`
+
+	row := j.db.QueryRow(sqlCount)
+
+	var totalRows int
+	err = row.Scan(&totalRows)
+
+	if err != nil {
+		return nil, pagination, err
+	}
+
+	pagination = GetDataPageInfo(page, 10, totalRows)
+
+	return jadwal, pagination, nil
 }
 
 func (j *JadwalRepo) FetchJadwalDokterByID(dokter_id int64) (Jadwal, error) {

@@ -25,8 +25,9 @@ func NewDokterRepositories(db *sql.DB) *DokterRepo {
 	return &DokterRepo{db: db}
 }
 
-func (d *DokterRepo) FetchDokter(page int) ([]Dokter, error) {
+func (d *DokterRepo) FetchDokter(page int) ([]Dokter, Pagination, error) {
 	var dokter []Dokter = make([]Dokter, 0)
+	var pagination Pagination
 
 	offSet := (page - 1) * 10
 
@@ -34,7 +35,7 @@ func (d *DokterRepo) FetchDokter(page int) ([]Dokter, error) {
 
 	rows, err := d.db.Query(sqlStmt, offSet)
 	if err != nil {
-		return nil, errors.New("gagal menampilkan dokter")
+		return nil, pagination, errors.New("gagal menampilkan dokter")
 	}
 
 	defer rows.Close()
@@ -47,13 +48,26 @@ func (d *DokterRepo) FetchDokter(page int) ([]Dokter, error) {
 		)
 
 		if err != nil {
-			return nil, err
+			return nil, pagination, err
 		}
 
 		dokter = append(dokter, dataDokter)
 	}
 
-	return dokter, nil
+	var sqlStmtCount = `SELECT COUNT(*) FROM dokter`
+
+	row := d.db.QueryRow(sqlStmtCount)
+
+	var totalRows int
+	err = row.Scan(&totalRows)
+
+	if err != nil {
+		return nil, pagination, err
+	}
+
+	pagination = GetDataPageInfo(page, 10, totalRows)
+
+	return dokter, pagination, nil
 }
 
 func (d *DokterRepo) InsertDokter(email, nama, password, str_dokter, sip_dokter, status_dokter, poli_nama string) error {
@@ -122,8 +136,9 @@ func (d *DokterRepo) FetchDokterByPoliNama(slug string) ([]Dokter, error) {
 	return dokter, nil
 }
 
-func (u *DokterRepo) FetchDataDokter(page int) ([]Dokter, error) {
+func (u *DokterRepo) FetchDataDokter(page int) ([]Dokter, Pagination, error) {
 	var user []Dokter = make([]Dokter, 0)
+	var pagination Pagination
 
 	offSet := (page - 1) * 10
 
@@ -135,7 +150,7 @@ func (u *DokterRepo) FetchDataDokter(page int) ([]Dokter, error) {
 
 	rows, err := u.db.Query(sqlStmt, offSet)
 	if err != nil {
-		return nil, errors.New("gagal menampilkan data dokter")
+		return nil, pagination, errors.New("gagal menampilkan data dokter")
 	}
 
 	defer rows.Close()
@@ -154,13 +169,26 @@ func (u *DokterRepo) FetchDataDokter(page int) ([]Dokter, error) {
 		)
 
 		if err != nil {
-			return nil, err
+			return nil, pagination, err
 		}
 
 		user = append(user, dataDokter)
 	}
 
-	return user, nil
+	var sqlStmtCount = `SELECT COUNT(*) FROM users u JOIN dokter d ON u.id = d.user_id`
+
+	row := u.db.QueryRow(sqlStmtCount)
+
+	var totalRows int
+	err = row.Scan(&totalRows)
+
+	if err != nil {
+		return nil, pagination, errors.New("gagal menghitung jumlah data")
+	}
+
+	pagination = GetDataPageInfo(page, 10, totalRows)
+
+	return user, pagination, nil
 }
 
 func (d *DokterRepo) FetchDokterByID(dokter_id int64) (Dokter, error) {

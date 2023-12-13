@@ -135,9 +135,10 @@ func (p *PasienRepo) FetchLatestReservasiByUserID(user_id int64) (Reservasi, err
 	return reservasi, nil
 }
 
-func (r *ReservasiRepo) LihatReservasi(page int) ([]Reservasi, error) {
+func (r *ReservasiRepo) LihatReservasi(page int) ([]Reservasi, Pagination, error) {
 	// var sqlStmt string
 	var reservasi []Reservasi = make([]Reservasi, 0)
+	var pagination Pagination
 
 	offSet := (page - 1) * 10
 
@@ -152,7 +153,7 @@ func (r *ReservasiRepo) LihatReservasi(page int) ([]Reservasi, error) {
 
 	rows, err := r.db.Query(sqlStmt, offSet)
 	if err != nil {
-		return nil, errors.New("gagal menampilkan data reservasi")
+		return nil, pagination, errors.New("gagal menampilkan data reservasi")
 	}
 
 	defer rows.Close()
@@ -172,13 +173,26 @@ func (r *ReservasiRepo) LihatReservasi(page int) ([]Reservasi, error) {
 		)
 
 		if err != nil {
-			return nil, err
+			return nil, pagination, err
 		}
 
 		reservasi = append(reservasi, dataReservasi)
 	}
 
-	return reservasi, nil
+	var sqlStmtCount = `SELECT COUNT(*) FROM reservasi WHERE NOT status = 'Selesai'`
+
+	row := r.db.QueryRow(sqlStmtCount)
+
+	var totalRows int
+	err = row.Scan(&totalRows)
+
+	if err != nil {
+		return nil, pagination, errors.New("gagal menghitung jumlah data")
+	}
+
+	pagination = GetDataPageInfo(page, 10, totalRows)
+
+	return reservasi, pagination, nil
 }
 
 func (r *ReservasiRepo) VerifikasiReservasi(reservasi_id int64, status, alasan_verifikasi string) error {

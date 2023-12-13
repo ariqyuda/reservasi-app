@@ -89,6 +89,12 @@ type ReservasiResponse struct {
 	Data    interface{} `json:"data"`
 }
 
+type FetchDataSuccessResponse struct {
+	Message    string      `json:"message"`
+	Data       interface{} `json:"data"`
+	Pagination interface{} `json:"pagination"`
+}
+
 type VerifikasiResponse struct {
 	Message string `json:"message"`
 }
@@ -199,7 +205,7 @@ func (api *API) fetchDokter(w http.ResponseWriter, req *http.Request) {
 
 	page, err := strconv.Atoi(req.URL.Query().Get("page"))
 
-	dokter, err := api.dokterRepo.FetchDokter(page)
+	dokter, pagination, err := api.dokterRepo.FetchDokter(page)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -208,9 +214,10 @@ func (api *API) fetchDokter(w http.ResponseWriter, req *http.Request) {
 			encoder.Encode(ReservasiErrorResponse{Error: err.Error()})
 		}
 	}()
-	fetchDokterResponse := DokterResponse{
-		Message: "success",
-		Data:    dokter,
+	fetchDokterResponse := FetchDataSuccessResponse{
+		Message:    "success",
+		Data:       dokter,
+		Pagination: pagination,
 	}
 
 	json.NewEncoder(w).Encode(fetchDokterResponse)
@@ -221,7 +228,7 @@ func (api *API) fetchJadwalDokter(w http.ResponseWriter, req *http.Request) {
 
 	page, err := strconv.Atoi(req.URL.Query().Get("page"))
 
-	reservasi, err := api.jadwalRepo.FetchJadwalDokter(page)
+	reservasi, pagination, err := api.jadwalRepo.FetchJadwalDokter(page)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -230,9 +237,10 @@ func (api *API) fetchJadwalDokter(w http.ResponseWriter, req *http.Request) {
 			encoder.Encode(ReservasiErrorResponse{Error: err.Error()})
 		}
 	}()
-	fetchJadwalResponse := FetchJadwalSuccessResponse{
-		Message: "success",
-		Data:    reservasi,
+	fetchJadwalResponse := FetchDataSuccessResponse{
+		Message:    "success",
+		Data:       reservasi,
+		Pagination: pagination,
 	}
 
 	json.NewEncoder(w).Encode(fetchJadwalResponse)
@@ -243,7 +251,7 @@ func (api *API) lihatReservasiUser(w http.ResponseWriter, req *http.Request) {
 
 	page, err := strconv.Atoi(req.URL.Query().Get("page"))
 
-	reservasi, err := api.reservasiRepo.LihatReservasi(page)
+	reservasi, pagination, err := api.reservasiRepo.LihatReservasi(page)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -252,9 +260,10 @@ func (api *API) lihatReservasiUser(w http.ResponseWriter, req *http.Request) {
 			encoder.Encode(ReservasiErrorResponse{Error: err.Error()})
 		}
 	}()
-	lihatReservasiResponse := ReservasiResponse{
-		Message: "success",
-		Data:    reservasi,
+	lihatReservasiResponse := FetchDataSuccessResponse{
+		Message:    "success",
+		Data:       reservasi,
+		Pagination: pagination,
 	}
 
 	json.NewEncoder(w).Encode(lihatReservasiResponse)

@@ -65,8 +65,9 @@ func (p *PasienRepo) UbahDataDiri(user_id int64, nik, nama, gender, tgl_lahir, t
 	return err
 }
 
-func (p *PasienRepo) FetchDataPasien(page int) ([]Pasien, error) {
+func (p *PasienRepo) FetchDataPasien(page int) ([]Pasien, Pagination, error) {
 	var user []Pasien = make([]Pasien, 0)
+	var pagination Pagination
 
 	offSet := (page - 1) * 10
 
@@ -77,7 +78,7 @@ func (p *PasienRepo) FetchDataPasien(page int) ([]Pasien, error) {
 
 	rows, err := p.db.Query(sqlStmt, offSet)
 	if err != nil {
-		return nil, errors.New("gagal menampilkan data user")
+		return nil, pagination, errors.New("gagal menampilkan data user")
 	}
 
 	defer rows.Close()
@@ -92,13 +93,26 @@ func (p *PasienRepo) FetchDataPasien(page int) ([]Pasien, error) {
 		)
 
 		if err != nil {
-			return nil, err
+			return nil, pagination, err
 		}
 
 		user = append(user, dataUser)
 	}
 
-	return user, nil
+	var sqlStmtCount = `SELECT COUNT(*) FROM users u JOIN pasien p ON u.id = p.user_id`
+
+	row := p.db.QueryRow(sqlStmtCount)
+
+	var totalRows int
+	err = row.Scan(&totalRows)
+
+	if err != nil {
+		return nil, pagination, errors.New("gagal menghitung jumlah data")
+	}
+
+	pagination = GetDataPageInfo(page, 10, totalRows)
+
+	return user, pagination, nil
 }
 
 func (p *PasienRepo) FetchPasienByNIK(nik string) (Pasien, error) {

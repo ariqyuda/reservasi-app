@@ -33,8 +33,9 @@ func (prs *PetugasRepo) InsertPetugas(email, nama, password string) error {
 	return err
 }
 
-func (prs *PetugasRepo) FetchDataPetugas(page int) ([]User, error) {
+func (prs *PetugasRepo) FetchDataPetugas(page int) ([]User, Pagination, error) {
 	var user []User = make([]User, 0)
+	var pagination Pagination
 
 	offSet := (page - 1) * 10
 
@@ -42,7 +43,7 @@ func (prs *PetugasRepo) FetchDataPetugas(page int) ([]User, error) {
 
 	rows, err := prs.db.Query(sqlStmt, offSet)
 	if err != nil {
-		return nil, errors.New("gagal menampilkan data petugas")
+		return nil, pagination, errors.New("gagal menampilkan data petugas")
 	}
 
 	defer rows.Close()
@@ -56,11 +57,24 @@ func (prs *PetugasRepo) FetchDataPetugas(page int) ([]User, error) {
 		)
 
 		if err != nil {
-			return nil, err
+			return nil, pagination, err
 		}
 
 		user = append(user, dataUser)
 	}
 
-	return user, nil
+	var sqlStmtCount = `SELECT COUNT(*) FROM users WHERE role = 'petugas'`
+
+	row := prs.db.QueryRow(sqlStmtCount)
+
+	var totalRows int
+	err = row.Scan(&totalRows)
+
+	if err != nil {
+		return nil, pagination, err
+	}
+
+	pagination = GetDataPageInfo(page, 10, totalRows)
+
+	return user, pagination, nil
 }

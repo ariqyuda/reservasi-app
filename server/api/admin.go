@@ -21,8 +21,9 @@ type Petugas struct {
 }
 
 type FetchUserSuccessResponse struct {
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
+	Message    string      `json:"message"`
+	Data       interface{} `json:"data"`
+	Pagination interface{} `json:"pagination"`
 }
 
 type InsertPetugasSuccessResponse struct {
@@ -35,7 +36,7 @@ func (api *API) lihatDataPetugas(w http.ResponseWriter, req *http.Request) {
 
 	page, err := strconv.Atoi(req.URL.Query().Get("page"))
 
-	userData, err := api.petugasRepo.FetchDataPetugas(page)
+	userData, pagination, err := api.petugasRepo.FetchDataPetugas(page)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -45,8 +46,9 @@ func (api *API) lihatDataPetugas(w http.ResponseWriter, req *http.Request) {
 		}
 	}()
 	fetchUserResponse := FetchUserSuccessResponse{
-		Message: "success",
-		Data:    userData,
+		Message:    "success",
+		Data:       userData,
+		Pagination: pagination,
 	}
 
 	json.NewEncoder(w).Encode(fetchUserResponse)
@@ -57,7 +59,7 @@ func (api *API) lihatDataPasien(w http.ResponseWriter, req *http.Request) {
 
 	page, err := strconv.Atoi(req.URL.Query().Get("page"))
 
-	pasienData, err := api.pasienRepo.FetchDataPasien(page)
+	pasienData, pagination, err := api.pasienRepo.FetchDataPasien(page)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -67,8 +69,9 @@ func (api *API) lihatDataPasien(w http.ResponseWriter, req *http.Request) {
 		}
 	}()
 	fetchUserResponse := FetchUserSuccessResponse{
-		Message: "success",
-		Data:    pasienData,
+		Message:    "success",
+		Data:       pasienData,
+		Pagination: pagination,
 	}
 
 	json.NewEncoder(w).Encode(fetchUserResponse)
@@ -79,7 +82,7 @@ func (api *API) lihatDataDokter(w http.ResponseWriter, req *http.Request) {
 
 	page, err := strconv.Atoi(req.URL.Query().Get("page"))
 
-	dokterData, err := api.dokterRepo.FetchDataDokter(page)
+	dokterData, pagination, err := api.dokterRepo.FetchDataDokter(page)
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -89,8 +92,9 @@ func (api *API) lihatDataDokter(w http.ResponseWriter, req *http.Request) {
 		}
 	}()
 	fetchUserResponse := FetchUserSuccessResponse{
-		Message: "success",
-		Data:    dokterData,
+		Message:    "success",
+		Data:       dokterData,
+		Pagination: pagination,
 	}
 
 	json.NewEncoder(w).Encode(fetchUserResponse)
