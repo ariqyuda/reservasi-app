@@ -137,10 +137,9 @@ func (api *API) lihatJadwalDokter(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
 	id_dokter, err := strconv.Atoi(req.URL.Query().Get("id"))
-	page, err := strconv.Atoi(req.URL.Query().Get("page"))
 
 	dokter, err := api.dokterRepo.FetchDokterByID(int64(id_dokter))
-	reservasi, err := api.jadwalRepo.FetchJadwalDokterByDokterID(int64(id_dokter), page)
+	reservasi, err := api.jadwalRepo.FetchJadwalDokterByDokterID(int64(id_dokter))
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {

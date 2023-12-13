@@ -127,7 +127,7 @@ func (u *DokterRepo) FetchDataDokter(page int) ([]Dokter, error) {
 
 	offSet := (page - 1) * 10
 
-	var sqlStmt string = `SELECT u.id, u.email, u.nama, d.str_dokter, d.sip_dokter, d.status, p.nama
+	var sqlStmt string = `SELECT u.id, u.email, u.nama, d.id as id_dokter, d.str_dokter, d.sip_dokter, d.status, p.nama
 	FROM users u
 	JOIN dokter d ON u.id = d.user_id
 	JOIN poli p ON d.poli_id = p.id
@@ -135,7 +135,7 @@ func (u *DokterRepo) FetchDataDokter(page int) ([]Dokter, error) {
 
 	rows, err := u.db.Query(sqlStmt, offSet)
 	if err != nil {
-		return nil, errors.New("gagal menampilkan data user")
+		return nil, errors.New("gagal menampilkan data dokter")
 	}
 
 	defer rows.Close()
@@ -146,6 +146,7 @@ func (u *DokterRepo) FetchDataDokter(page int) ([]Dokter, error) {
 			&dataDokter.UserID,
 			&dataDokter.Email,
 			&dataDokter.Nama,
+			&dataDokter.ID,
 			&dataDokter.STRDokter,
 			&dataDokter.SIPDokter,
 			&dataDokter.Status,
