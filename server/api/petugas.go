@@ -203,9 +203,7 @@ func (api *API) insertJadwalDokter(w http.ResponseWriter, req *http.Request) {
 func (api *API) fetchDokter(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	page, err := strconv.Atoi(req.URL.Query().Get("page"))
-
-	dokter, pagination, err := api.dokterRepo.FetchDokter(page)
+	dokter, err := api.dokterRepo.FetchDokter()
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -215,9 +213,8 @@ func (api *API) fetchDokter(w http.ResponseWriter, req *http.Request) {
 		}
 	}()
 	fetchDokterResponse := FetchDataSuccessResponse{
-		Message:    "success",
-		Data:       dokter,
-		Pagination: pagination,
+		Message: "success",
+		Data:    dokter,
 	}
 
 	json.NewEncoder(w).Encode(fetchDokterResponse)
@@ -226,9 +223,7 @@ func (api *API) fetchDokter(w http.ResponseWriter, req *http.Request) {
 func (api *API) fetchJadwalDokter(w http.ResponseWriter, req *http.Request) {
 	api.AllowOrigin(w, req)
 
-	page, err := strconv.Atoi(req.URL.Query().Get("page"))
-
-	reservasi, pagination, err := api.jadwalRepo.FetchJadwalDokter(page)
+	reservasi, err := api.jadwalRepo.FetchJadwalDokter()
 	encoder := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
 	defer func() {
@@ -238,9 +233,8 @@ func (api *API) fetchJadwalDokter(w http.ResponseWriter, req *http.Request) {
 		}
 	}()
 	fetchJadwalResponse := FetchDataSuccessResponse{
-		Message:    "success",
-		Data:       reservasi,
-		Pagination: pagination,
+		Message: "success",
+		Data:    reservasi,
 	}
 
 	json.NewEncoder(w).Encode(fetchJadwalResponse)

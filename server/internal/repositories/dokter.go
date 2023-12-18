@@ -25,17 +25,14 @@ func NewDokterRepositories(db *sql.DB) *DokterRepo {
 	return &DokterRepo{db: db}
 }
 
-func (d *DokterRepo) FetchDokter(page int) ([]Dokter, Pagination, error) {
+func (d *DokterRepo) FetchDokter() ([]Dokter, error) {
 	var dokter []Dokter = make([]Dokter, 0)
-	var pagination Pagination
 
-	offSet := (page - 1) * 10
+	var sqlStmt = `SELECT id, nama FROM dokter`
 
-	var sqlStmt = `SELECT id, nama FROM dokter LIMIT 10 OFFSET ?`
-
-	rows, err := d.db.Query(sqlStmt, offSet)
+	rows, err := d.db.Query(sqlStmt)
 	if err != nil {
-		return nil, pagination, errors.New("gagal menampilkan dokter")
+		return nil, errors.New("gagal menampilkan dokter")
 	}
 
 	defer rows.Close()
@@ -48,26 +45,13 @@ func (d *DokterRepo) FetchDokter(page int) ([]Dokter, Pagination, error) {
 		)
 
 		if err != nil {
-			return nil, pagination, err
+			return nil, err
 		}
 
 		dokter = append(dokter, dataDokter)
 	}
 
-	var sqlStmtCount = `SELECT COUNT(*) FROM dokter`
-
-	row := d.db.QueryRow(sqlStmtCount)
-
-	var totalRows int
-	err = row.Scan(&totalRows)
-
-	if err != nil {
-		return nil, pagination, err
-	}
-
-	pagination = GetDataPageInfo(page, 10, totalRows)
-
-	return dokter, pagination, nil
+	return dokter, nil
 }
 
 func (d *DokterRepo) InsertDokter(email, nama, password, str_dokter, sip_dokter, status_dokter, poli_nama string) error {
