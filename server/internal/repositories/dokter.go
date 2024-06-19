@@ -26,6 +26,7 @@ func NewDokterRepositories(db *sql.DB) *DokterRepo {
 }
 
 func (d *DokterRepo) FetchDokter() ([]Dokter, error) {
+	//inisiasi variabel
 	var dokter []Dokter = make([]Dokter, 0)
 
 	var sqlStmt = `SELECT id, nama FROM dokter`
